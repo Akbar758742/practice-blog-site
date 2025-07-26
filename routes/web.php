@@ -21,20 +21,24 @@ Route::view('/example-auth', 'example-auth');
  */
 
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::middleware([])->group(function () {
+    Route::middleware(['guest'])->group(function () {
         Route::controller(AuthController::class)->group(function () {
             Route::get('/login', 'loginForm')->name('login');
             Route::get('/forget-password', 'forgetPassword')->name('forgetPassword');
             Route::post('/login', 'loginHandler')->name('loginHandler');
+            Route::post('/send-password-reset-link', 'sendPasswordResetLink')->name('sendPasswordResetLink');
+            Route::get('/reset-password/{token}', 'resetPasswordForm')->name('resetPasswordForm');
+            // Route::post('/reset-password', 'resetPassword')->name('resetPassword');
             // Route::get('/register', 'register')->name('register');
             // Route::post('/register', 'postRegister')->name('postRegister');
-            // Route::get('/logout', 'logout')->name('logout');
+
         });
     });
 
-    Route::middleware([])->group(function () {
+    Route::middleware(['auth'])->group(function () {
         Route::controller(AdminController::class)->group(function () {
             Route::get('/dashboard', 'AdminDashboard')->name('dashboard');
+              Route::post('/logout', 'logoutHandler')->name('logout');
         });
     });
 });

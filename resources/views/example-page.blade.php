@@ -2,6 +2,6 @@
 @section('pageTitle',isset($title)?$title:'page title here')
 
 @section('content')
-page content here
+page content here...
 @endsection
 

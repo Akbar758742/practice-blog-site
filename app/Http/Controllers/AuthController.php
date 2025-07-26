@@ -63,14 +63,53 @@ class AuthController extends Controller
             );
          }
 
-        //  if(Auth::attempt([$fieldType => $request->login_id,'password'=>$request->password,'status'=>UserStatus::ACTIVE]))
-        //  {
-        //     return redirect()->route('admin.dashboard');
-        //  }
-        //  else{
-        //     return redirect()->back()->with('error','Invalid login details');
+         $creds=array(
+            $fieldType => $request->login_id,
+            'password' => $request->password
+         );
 
-        //  }
+            if(Auth::attempt($creds)){
+                //check if account is inactive mode
+                if(auth()->user()->status==UserStatus::INACTIVE){
+                    Auth::logout();
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+                    return redirect()->route('admin.login')->with('fail','Your account is currently inactive. Please contact support at (support@larablog.test) for more information.');
+                }
+                //check if account is pending
+                if(auth()->user()->status==UserStatus::Pending){
+                    Auth::logout();
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+                    return redirect()->route('admin.login')->with('fail','Your account is currently pending. Please contact support at (support@larablog.test) for more information.');
+                }
+                return redirect()->route('admin.dashboard');
+            }
+
+
+         else{
+            return redirect()->route('admin.login')->with('fail','Invalid login details');
+
+         }
 
     }
+
+    public function sendPasswordResetLink(Request $request)
+    {
+        dd($request->all());
+    //     $request->validate([
+    //         'email' => 'required|email|exists:users,email',
+    //     ]);
+
+    //     $status = Password::sendResetLink(
+    //         $request->only('email')
+    //     );
+
+    //     return $status === Password::RESET_LINK_SENT
+    //                 ? back()->with(['status' => __($status)])
+    //                 : back()->withErrors([
+    //                     'email' => __($status),
+    //                 ]);
+    // }
+}
 }
