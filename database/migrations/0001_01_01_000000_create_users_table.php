@@ -20,7 +20,7 @@ return new class extends Migration
              $table->string('password');
             $table->string('picture')->nullable();
             $table->text('bio')->nullable();
-            $table->string('userType')->default('admin'); // Default type is 'user'
+            $table->string('type')->default('admin'); // Default type is 'user'
              $table->string('status')->default('pending');
             $table->rememberToken();
             $table->timestamps();

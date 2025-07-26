@@ -25,7 +25,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::controller(AuthController::class)->group(function () {
             Route::get('/login', 'loginForm')->name('login');
             Route::get('/forget-password', 'forgetPassword')->name('forgetPassword');
-            // Route::post('/login', 'postLogin')->name('postLogin');
+            Route::post('/login', 'loginHandler')->name('loginHandler');
             // Route::get('/register', 'register')->name('register');
             // Route::post('/register', 'postRegister')->name('postRegister');
             // Route::get('/logout', 'logout')->name('logout');
