@@ -28,7 +28,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('/login', 'loginHandler')->name('loginHandler');
             Route::post('/send-password-reset-link', 'sendPasswordResetLink')->name('sendPasswordResetLink');
             Route::get('/reset-password/{token}', 'resetPasswordForm')->name('resetPasswordForm');
-            // Route::post('/reset-password', 'resetPassword')->name('resetPassword');
+
+            Route::post('/reset-password', 'resetPasswordHandler')->name('resetPasswordHandler');
             // Route::get('/register', 'register')->name('register');
             // Route::post('/register', 'postRegister')->name('postRegister');
 
