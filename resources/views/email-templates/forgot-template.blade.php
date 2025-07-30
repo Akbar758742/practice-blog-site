@@ -74,6 +74,7 @@
       <p style="text-align: center;">
         <a href="{{ $actionLink }}" target="_blank" class="btn">Reset Password</a>
       </p>
+      <p>this link is valid for 5 mins</p>
       <p>If you did not request a password reset, you can safely ignore this email.</p>
       <p>Thanks,<br>The YourWebsite Team</p>
     </div>
