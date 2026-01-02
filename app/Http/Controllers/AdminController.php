@@ -20,4 +20,13 @@ class AdminController extends Controller
         $request->session()->regenerateToken();
         return redirect()->route('admin.login')->with('fail', 'You have been logged out');
     }
+
+    public function profileView(Request $request)
+    {
+        $data=[
+            // 'user'=>Auth::user(),
+            'pageTitle'=>'Admin Profile'
+        ];
+        return view('backend.pages.profile', $data);
+    }
 }

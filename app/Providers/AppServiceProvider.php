@@ -29,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
             return route('admin.dashboard');
         });
         Authenticate::redirectUsing(function () {
-            Session::flash('fail', 'You need to login first');
+            Session::flash('fail', 'You need to login firstt');
             return route('admin.login');
         });
     }

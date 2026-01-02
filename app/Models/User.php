@@ -57,4 +57,17 @@ class User extends Authenticatable
 
         ];
     }
+    public function isAdmin()
+    {
+        return $this->userType === UserType::Admin;
+    }
+
+    public function isActive()
+    {
+        return $this->status === UserStatus::ACTIVE;
+    }
+    public function getPictureAttribute($value)
+    {
+        return $value? asset('/images/users/'.$value) : asset('images/users/default.jpg');
+    }
 }
