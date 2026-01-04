@@ -38,17 +38,28 @@ class Profile extends Component
             'bio'=>'nullable|string|max:500',
 
         ]);
-        $user->name=$this->name;
-        $user->email=$this->email;
-        $user->bio=$this->bio;
-        // $user->picture=$this->picture;
 
-       $updated= $user->save();
-       sleep(0.5);
-         if($updated){
-          session()->flash('success','Profile updated successfully.');
-         }
+        try {
+            $user->name=$this->name;
+            $user->email=$this->email;
+            $user->bio=$this->bio;
+            // $user->picture=$this->picture;
 
+            $updated= $user->save();
+            sleep(0.5);
+
+            if($updated){
+                $this->dispatch('swal:success', [
+                    'title' => 'Success',
+                    'message' => 'Profile updated successfully.'
+                ]);
+            }
+        } catch(\Exception $e) {
+            $this->dispatch('swal:error', [
+                'title' => 'Error',
+                'message' => 'Failed to update profile. Please try again.'
+            ]);
+        }
       }
     public function render()
     {

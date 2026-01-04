@@ -98,27 +98,28 @@
                                 id="personal_details" role="tabpanel">
                                 <div class="pd-20">
                                     <form wire:submit="updateProfile()">
-                                   <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label>Full Name</label>
-                                                <input type="text" wire:model="name" class="form-control" value="{{ $user->name }}" />
-                                                @error('name')
-                                                    <span class="text-danger">{{ $message }}</span>
-
-                                                @enderror
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label>Full Name</label>
+                                                    <input type="text" wire:model="name" class="form-control"
+                                                        value="{{ $user->name }}" />
+                                                    @error('name')
+                                                        <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label>Email</label>
-                                                <input type="email" wire:model="email" class="form-control" value="{{ $user->email }}" disabled/>
-                                                @error('email')
-                                                    <span class="text-danger">{{ $message }}</span>
-                                                @enderror
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label>Email</label>
+                                                    <input type="email" wire:model="email" class="form-control"
+                                                        value="{{ $user->email }}" disabled />
+                                                    @error('email')
+                                                        <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
                                             </div>
-                                        </div>
-                                        {{-- <div class="col-md-6">
+                                            {{-- <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>Phone</label>
                                                 <input type="text" wire:model="phone" class="form-control" value="{{ $user->phone }}" />
@@ -127,24 +128,25 @@
                                                 @enderror
                                             </div>
                                         </div> --}}
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <label>bio</label>
-                                                <textarea type="text" wire:model="bio" class="form-control" cols="4" rows="4" ></textarea>
-                                                @error('bio')
-                                                    <span class="text-danger">{{ $message }}</span>
-                                                @enderror
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label>bio</label>
+                                                    <textarea type="text" wire:model="bio" class="form-control" cols="4" rows="4"></textarea>
+                                                    @error('bio')
+                                                        <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <button type="button" wire:click="updateProfile()" class="btn btn-primary">Update
-                                                    Profile</button>
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <button type="button" wire:click="updateProfile()"
+                                                        class="btn btn-primary">Update
+                                                        Profile</button>
+                                                </div>
                                             </div>
-                                        </div>
 
-                                   </div>
-                                   </form>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                             <!-- Personal Details Tab End -->
@@ -157,8 +159,8 @@
                             </div>
                             <!-- Update Password Tab End -->
                             <!-- Social Links Tab start -->
-                            <div class="tab-pane fade {{ $tab == 'social_links' ? 'show active' : '' }}" id="social_links"
-                                role="tabpanel">
+                            <div class="tab-pane fade {{ $tab == 'social_links' ? 'show active' : '' }}"
+                                id="social_links" role="tabpanel">
                                 <div class="pd-20 profile-task-wrap">
                                     ..social links content..
                                 </div>
@@ -171,3 +173,40 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('livewire:initialized', () => {
+            Livewire.on('swal:success', (data) => {
+                Swal.fire({
+                    title: data.title || 'Success',
+                    text: data.message || 'Operation completed successfully',
+                    icon: 'success',
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'OK'
+                });
+            });
+
+            Livewire.on('swal:error', (data) => {
+                Swal.fire({
+                    title: data.title || 'Error',
+                    text: data.message || 'Something went wrong',
+                    icon: 'error',
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'OK'
+                });
+            });
+
+            Livewire.on('swal:warning', (data) => {
+                Swal.fire({
+                    title: data.title || 'Warning',
+                    text: data.message || 'Please be careful',
+                    icon: 'warning',
+                    confirmButtonColor: '#f7b924',
+                    confirmButtonText: 'OK'
+                });
+            });
+        });
+    </script>
+@endpush
