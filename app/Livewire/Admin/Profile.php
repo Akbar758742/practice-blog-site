@@ -4,11 +4,12 @@ namespace App\Livewire\Admin;
 
 use Livewire\Component;
 use App\Models\User;
-
+use App\Traits\AlertTrait;
 use Illuminate\Http\Request;
 
 class Profile extends Component
 {
+    use AlertTrait;
 
     public $tab=null;
     public $tabname='personal_details';
@@ -49,16 +50,12 @@ class Profile extends Component
             sleep(0.5);
 
             if($updated){
-                $this->dispatch('swal:success', [
-                    'title' => 'Success',
-                    'message' => 'Profile updated successfully.'
-                ]);
+                $this->successAlert('Success', 'Profile updated successfully.');
+                $this->dispatch('updateTopUserInfo')->to(TopUserInfo::class);
             }
         } catch(\Exception $e) {
-            $this->dispatch('swal:error', [
-                'title' => 'Error',
-                'message' => 'Failed to update profile. Please try again.'
-            ]);
+            //  dd($e->getMessage());
+            $this->errorAlert('Error', 'Failed to update profile. Please try again.');
         }
       }
     public function render()
