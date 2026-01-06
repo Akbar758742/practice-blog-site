@@ -13,6 +13,9 @@
 
     <!-- Mobile Specific Metas -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+     <meta name="csrf-token" content="{{ csrf_token() }}">
+      @kropifyStyles
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
@@ -365,7 +368,7 @@
     <script src="{{ asset('backend') }}/vendors/scripts/process.js"></script>
     <script src="{{ asset('backend') }}/vendors/scripts/layout-settings.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+   @kropifyScripts
     <!-- Global SweetAlert Handler for Livewire -->
     <script>
         document.addEventListener('livewire:initialized', () => {

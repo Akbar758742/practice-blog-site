@@ -13,7 +13,8 @@
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
         "livewire/livewire": "^3.7",
-        "phpmailer/phpmailer": "^6.10"
+        "phpmailer/phpmailer": "^6.10",
+        "sawastacks/kropify-laravel": "^3.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.16",

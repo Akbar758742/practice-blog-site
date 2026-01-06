@@ -3,8 +3,10 @@
         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-30">
             <div class="pd-20 card-box height-100-p">
                 <div class="profile-photo">
-                    <a href=""class="edit-avatar"><i class="fa fa-pencil"></i></a>
-                    <img src="{{ $user->picture }}" alt="" class="avatar-photo">
+                    <a href="javascript:;" onclick="event.preventDefault(); document.getElementById('profilePicturefile').click();" class="edit-avatar"><i class="fa fa-pencil"></i></a>
+                    <img src="{{ $user->picture }}" alt="" id="profilePicturePreview" class="avatar-photo">
+                    <input type="file" name="profilePicturefile" id="profilePicturefile" style="display: none"
+                      >
 
                 </div>
                 <h5 class="text-center h5 mb-0">{{ $user->name }}</h5>
@@ -173,3 +175,41 @@
         </div>
     </div>
 </div>
+
+@push('scripts')
+    <script>
+
+
+ const cropper = new Kropify('#profilePicturefile', {
+            aspectRatio: 1,
+            preview: '#profilePicturePreview',
+            processURL: '/profile/update', // or processURL:'/crop'
+            allowedExtensions: ['jpg', 'jpeg', 'png'],
+            showLoader: true,
+            animationClass: 'pulse',
+            // fileName: 'avatar', // leave this commented if you want it to default to the input name
+            cancelButtonText:'Cancel',
+            maxWoH:500,
+            onError: function (msg) {
+                alert(msg);
+                // toastr.error(msg);
+            },
+            onDone: function(response){
+                alert(response.message);
+                console.log(response.data);
+                // toastr.success(response.message);
+            }
+        });
+        // Preview Profile Picture
+        // document.getElementById('profilePicturefile').addEventListener('change', function(event) {
+        //     const [file] = event.target.files;
+        //     if (file) {
+        //         const reader = new FileReader();
+        //         reader.onload = function(e) {
+        //             document.getElementById('profilePicturePreview').src = e.target.result;
+        //         }
+        //         reader.readAsDataURL(file);
+        //     }
+        // });
+    </script>
+@endpush
