@@ -3,10 +3,11 @@
         <div class="col-xl-4 col-lg-4 col-md-4 col-sm-12 mb-30">
             <div class="pd-20 card-box height-100-p">
                 <div class="profile-photo">
-                    <a href="javascript:;" onclick="event.preventDefault(); document.getElementById('profilePicturefile').click();" class="edit-avatar"><i class="fa fa-pencil"></i></a>
+                    <a href="javascript:;"
+                        onclick="event.preventDefault(); document.getElementById('profilePicturefile').click();"
+                        class="edit-avatar"><i class="fa fa-pencil"></i></a>
                     <img src="{{ $user->picture }}" alt="" id="profilePicturePreview" class="avatar-photo">
-                    <input type="file" name="profilePicturefile" id="profilePicturefile" style="display: none"
-                      >
+                    <input type="file" name="profilePicturefile" id="profilePicturefile" style="display: none">
 
                 </div>
                 <h5 class="text-center h5 mb-0">{{ $user->name }}</h5>
@@ -122,18 +123,20 @@
                                                 </div>
                                             </div>
                                             {{-- <div class="col-md-6">
-                                            <div class="form-group">
-                                                <label>Phone</label>
-                                                <input type="text" wire:model="phone" class="form-control" value="{{ $user->phone }}" />
-                                                @error('phone')
+                                                <div class="form-group">
+                                                    <label>Phone</label>
+                                                    <input type="text" wire:model="phone" class="form-control"
+                                                        value="{{ $user->phone }}" />
+                                                    @error('phone')
                                                     <span class="text-danger">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div> --}}
+                                                    @enderror
+                                                </div>
+                                            </div> --}}
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label>bio</label>
-                                                    <textarea type="text" wire:model="bio" class="form-control" cols="4" rows="4"></textarea>
+                                                    <textarea type="text" wire:model="bio" class="form-control" cols="4"
+                                                        rows="4"></textarea>
                                                     @error('bio')
                                                         <span class="text-danger">{{ $message }}</span>
                                                     @enderror
@@ -180,24 +183,33 @@
     <script>
 
 
- const cropper = new Kropify('#profilePicturefile', {
+        const cropper = new Kropify('#profilePicturefile', {
             aspectRatio: 1,
             preview: '#profilePicturePreview',
-            processURL: '/profile/update', // or processURL:'/crop'
+            processURL: '{{ route('admin.profilePic.update') }}',
             allowedExtensions: ['jpg', 'jpeg', 'png'],
             showLoader: true,
             animationClass: 'pulse',
             // fileName: 'avatar', // leave this commented if you want it to default to the input name
-            cancelButtonText:'Cancel',
-            maxWoH:500,
-            onError: function (msg) {
-                alert(msg);
-                // toastr.error(msg);
+            cancelButtonText: 'Cancel',
+            maxWoH: 500,
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
-            onDone: function(response){
-                alert(response.message);
-                console.log(response.data);
-                // toastr.success(response.message);
+            onError: function (msg) {
+                // alert(msg);
+                Livewire.dispatch('swal:error', { title: 'Error', message: msg });
+            },
+            onDone: function (response) {
+                if (response.status == 1) {
+                    // alert(response.message);
+                    Livewire.dispatch('swal:success', { title: 'Success', message: response.message });
+                    Livewire.dispatch('updateTopUserInfo');
+                    Livewire.dispatch('updateProfile');
+                } else {
+                    // alert(response.message);
+                    Livewire.dispatch('swal:error', { title: 'Error', message: response.message });
+                }
             }
         });
         // Preview Profile Picture
