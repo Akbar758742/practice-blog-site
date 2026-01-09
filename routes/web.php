@@ -21,7 +21,7 @@ Route::view('/example-auth', 'example-auth');
  */
 
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::middleware(['guest'])->group(function () {
+    Route::middleware(['guest','preventBackHistory'])->group(function () {
         Route::controller(AuthController::class)->group(function () {
             Route::get('/login', 'loginForm')->name('login');
             Route::get('/forget-password', 'forgetPassword')->name('forgetPassword');
@@ -36,7 +36,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         });
     });
 
-    Route::middleware(['auth'])->group(function () {
+    Route::middleware(['auth','preventBackHistory'])->group(function () {
         Route::controller(AdminController::class)->group(function () {
             Route::get('/dashboard', 'AdminDashboard')->name('dashboard');
               Route::post('/logout', 'logoutHandler')->name('logout');
