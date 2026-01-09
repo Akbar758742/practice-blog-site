@@ -159,7 +159,53 @@
                             <div class="tab-pane fade {{ $tab == 'update_password' ? 'show active' : '' }}"
                                 id="update_password" role="tabpanel">
                                 <div class="pd-20 profile-task-wrap">
-                                    ..update password content..
+                                    <form wire:submit="updatePassword()">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label>Current Password</label>
+                                                    <input type="password" wire:model="current_password" placeholder="enter current password"
+                                                        class="form-control" />
+                                                    @error('current_password')
+                                                        <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
+
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label>new Password</label>
+                                                    <input type="password" wire:model="new_password" placeholder="enter new password"
+                                                        class="form-control" />
+                                                    @error('new_password')
+                                                        <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
+
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label>confirm newPassword</label>
+                                                    <input type="password" wire:model="new_password_confirmation" placeholder="confirm new password"
+                                                        class="form-control" />
+                                                    @error('new_password_confirmation')
+                                                        <span class="text-danger">{{ $message }}</span>
+                                                    @enderror
+
+                                                </div>
+
+
+                                            </div>
+                                            
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <button type="submit" class="btn btn-primary">Update
+                                                        Password</button>
+                                                </div>
+
+                                            </div>
+
+                                    </form>
                                 </div>
                             </div>
                             <!-- Update Password Tab End -->

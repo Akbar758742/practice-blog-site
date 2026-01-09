@@ -6,6 +6,11 @@ use Livewire\Component;
 use App\Models\User;
 use App\Traits\AlertTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use App\Livewire\Admin\TopUserInfo;
+use Illuminate\Support\Facades\Session;
+use App\Helpers\Cmail;
+
 
 class Profile extends Component
 {
@@ -16,6 +21,7 @@ class Profile extends Component
     protected $queryString=['tab'=>['keep' => true]];
 
     public $name, $username, $email, $bio, $picture,$address, $phone, $gender;
+    public $current_password, $new_password, $confirm_password_comfirmation;
     public function selectTab($tab){
         $this->tab=$tab;
     }
@@ -29,6 +35,7 @@ class Profile extends Component
         $this->picture=$user->picture;
 
       }
+
 
       public function updateProfile(){
         $user=User::findOrFail(auth()->user()->id);
@@ -58,6 +65,68 @@ class Profile extends Component
             $this->errorAlert('Error', 'Failed to update profile. Please try again.');
         }
       }
+
+      public function updatePassword(){
+
+      $user=User::findOrFail(auth()->user()->id);
+
+        $this->validate([
+            'current_password'=>[
+                'required',
+                'min:5',
+                function($attribute, $value, $fail) use ($user) {
+                    if (!Hash::check($value, $user->password)) {
+                       return $fail('The current password is incorrect.');
+                    }
+                },
+            ],
+                'new_password'=>'required|min:5|confirmed',
+
+            //    'new_password'=>  [
+            //         'required',
+
+            //         'min:5',
+            //         'confirmed',
+            //         function($attribute, $value, $fail) use ($user) {
+            //             if (Hash::check($value, $user->password)) {
+            //                 $fail('The new password must be different from the current password.');
+            //             }
+            //         },
+            //     ]
+
+
+            ]);
+
+               $updated=$user->update([
+                'password' => Hash::make($this->new_password),
+            ]);
+
+            if($updated){
+            $data=array(
+                'user'=>$user,
+                'new_password'=>$this->new_password,
+            );
+            $email_body=view('email-templates.password-change-template',compact('data'))->render();
+            $mail_config=array(
+                'recipient_address'=>$user->email,
+                'recipient_name'=>$user->name,
+                'body'=> $email_body,
+            );
+            Cmail::send($mail_config);
+            auth()->logout();
+            $this->successAlert('Success', 'Password updated successfully.');
+            $this->current_password='';
+            $this->new_password='';
+            $this->confirm_password_comfirmation='';
+            $this->redirectRoute('admin.login');
+            }
+            else{
+                $this->errorAlert('Error', 'Failed to update password. Please try again.');
+
+            }
+        }
+
+
     public function render()
     {
         return view('livewire.admin.profile', [
