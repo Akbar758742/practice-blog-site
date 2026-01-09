@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\UserStatus;
 use App\UserType;
+use App\Models\UserSocialLink;
 
 class User extends Authenticatable
 {
@@ -69,5 +70,9 @@ class User extends Authenticatable
     public function getPictureAttribute($value)
     {
         return $value? asset('/images/users/'.$value) : asset('images/users/default.jpg');
+    }
+    public function socialLinks()
+    {
+        return $this->belongsTo(UserSocialLink::class, 'id','user_id');
     }
 }

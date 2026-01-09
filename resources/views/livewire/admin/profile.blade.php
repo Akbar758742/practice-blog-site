@@ -204,6 +204,7 @@
                                                 </div>
 
                                             </div>
+                                            </div>
 
                                     </form>
                                 </div>
@@ -213,7 +214,70 @@
                             <div class="tab-pane fade {{ $tab == 'social_links' ? 'show active' : '' }}"
                                 id="social_links" role="tabpanel">
                                 <div class="pd-20 profile-task-wrap">
-                                    ..social links content..
+                                   <form wire:submit="updateSocialLinks()">
+                                     <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="facebook" class="form-label">Facebook</label>
+                                                <input type="text" class="form-control" id="facebook" wire:model="facebook_url">
+                                                @error('facebook_url')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="twitter" class="form-label">Twitter</label>
+                                                <input type="text" class="form-control" id="twitter" wire:model="twitter_url">
+                                                @error('twitter_url')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="instagram" class="form-label">Instagram</label>
+                                                <input type="text" class="form-control" id="instagram" wire:model="instagram_url">
+                                                @error('instagram_url')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="linkedin" class="form-label">Linkedin</label>
+                                                <input type="text" class="form-control" id="linkedin" wire:model="linkedin_url">
+                                                @error('linkedin_url')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="youtube" class="form-label">Youtube</label>
+                                                <input type="text" class="form-control" id="youtube" wire:model="youtube_url">
+                                                @error('youtube_url')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label for="github" class="form-label">Github</label>
+                                                <input type="text" class="form-control" id="github" wire:model="github_url">
+                                                @error('github_url')
+                                                    <span class="text-danger">{{ $message }}</span>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="mb-3">
+                                                <button type="submit" class="btn btn-primary">Update Social Links</button>
+                                            </div>
+                                        </div>
+                                     </div>
+
+                                   </form>
                                 </div>
                             </div>
                             <!-- Social Links Tab End -->

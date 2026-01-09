@@ -22,6 +22,7 @@ class Profile extends Component
 
     public $name, $username, $email, $bio, $picture, $address, $phone, $gender;
     public $current_password, $new_password, $new_password_confirmation;
+    public $facebook_url, $instagram_url, $twitter_url, $linkedin_url, $youtube_url, $github_url;
     public function selectTab($tab)
     {
         $this->tab = $tab;
@@ -29,32 +30,44 @@ class Profile extends Component
     public function mount(Request $request)
     {
         $this->tab = $request->get('tab') ? $request->get('tab') : $this->tabname;
-        $user = User::findOrFail(auth()->user()->id);
+        $user = User::with('socialLinks')->findOrFail(auth()->user()->id);
         $this->name = $user->name;
         $this->username = $user->username;
         $this->email = $user->email;
         $this->bio = $user->bio;
         $this->picture = $user->picture;
-
+        if(!is_null($user->socialLinks)) {
+        $this->facebook_url = $user->socialLinks->facebook_url;
+        $this->instagram_url = $user->socialLinks->instagram_url;
+        $this->twitter_url = $user->socialLinks->twitter_url;
+        $this->linkedin_url = $user->socialLinks->linkedin_url;
+        $this->youtube_url = $user->socialLinks->youtube_url;
+        $this->github_url = $user->socialLinks->github_url;
+    }
     }
 
 
     public function updateProfile()
     {
-        $user = User::findOrFail(auth()->user()->id);
+        $user = User::with('socialLinks')->findOrFail(auth()->user()->id);
 
         $this->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
             'bio' => 'nullable|string|max:500',
-
+            // 'facebook_url'=> 'nullable|url',
+            // 'instagram_url'=> 'nullable|url',
+            // 'twitter_url'=> 'nullable|url',
+            // 'linkedin_url'=> 'nullable|url',
+            // 'youtube_url'=> 'nullable|url',
+            // 'github_url'=> 'nullable|url',
         ]);
 
         try {
             $user->name = $this->name;
             $user->email = $this->email;
             $user->bio = $this->bio;
-            // $user->picture=$this->picture;
+                // $user->picture=$this->picture;
 
             $updated = $user->save();
             sleep(0.5);
@@ -128,6 +141,31 @@ class Profile extends Component
             $this->errorAlert('Error', 'Failed to update password. Please try again.');
 
         }
+    }
+
+    public function updateSocialLinks()
+    {
+        $user = User::with('socialLinks')->findOrFail(auth()->user()->id);
+        // dd($user->socialLinks);
+        $this->validate([
+            'facebook_url' => 'nullable|url',
+            'instagram_url' => 'nullable|url',
+            'twitter_url' => 'nullable|url',
+            'linkedin_url' => 'nullable|url',
+            'youtube_url' => 'nullable|url',
+            'github_url' => 'nullable|url',
+        ]);
+        $user->socialLinks()->updateOrCreate([
+            'user_id' => $user->id,
+        ], [
+            'facebook_url' => $this->facebook_url,
+            'instagram_url' => $this->instagram_url,
+            'twitter_url' => $this->twitter_url,
+            'linkedin_url' => $this->linkedin_url,
+            'youtube_url' => $this->youtube_url,
+            'github_url' => $this->github_url,
+        ]);
+        $this->successAlert('Success', 'Social links updated successfully.');
     }
 
 
