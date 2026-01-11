@@ -58,4 +58,17 @@ class AdminController extends Controller
         }
         return response()->json(['status' => 0, 'message' => 'No file selected']);
     }
+
+    public function generalSettings( Request $request)
+    {
+        $data = [
+            'pageTitle' => 'General Settings'
+        ];
+        return view('backend.pages.general_settings', $data);
+    }
+
+    public function generalSettingsUpdate(Request $request)
+    {
+
+    }
 }

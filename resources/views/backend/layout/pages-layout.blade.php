@@ -335,7 +335,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="" target="_blank" class="dropdown-toggle no-arrow">
+                        <a href="{{ route('admin.settings') }}"  class="dropdown-toggle no-arrow">
                             <span class="micon fa fa-cogs"></span>
                             <span class="mtext">general
                             </span>

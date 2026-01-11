@@ -42,6 +42,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
               Route::post('/logout', 'logoutHandler')->name('logout');
               Route::get('/profile','profileView')->name('profile');
               Route::post('/profile/update','profilePicUpdate')->name('profilePic.update');
+              Route::get('settings','generalSettings')->name('settings');
+              Route::post('settings','generalSettingsUpdate')->name('settings.update');
         });
     });
 });
