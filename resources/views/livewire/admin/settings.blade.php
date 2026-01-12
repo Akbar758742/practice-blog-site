@@ -21,13 +21,13 @@
                                 @error('site_title') <span class="text-danger">{{ $message }}</span> @enderror
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        {{-- <div class="col-md-6">
                             <div class="form-group">
                                 <label>site tagline</label>
                                 <input type="text" class="form-control" wire:model='site_tagline' placeholder="site tagline">
                                 @error('site_tagline') <span class="text-danger">{{ $message }}</span> @enderror
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label>site email</label>
