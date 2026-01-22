@@ -4,7 +4,7 @@
 <head>
     <!-- Basic Page Info -->
     <meta charset="utf-8" />
-    <title>@yield('pageTitle')</title>
+    <title>@yield('pageTitle', isset($pageTitle) ? $pageTitle : 'Blog Admin')</title>
 
     <!-- Site favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('backend') }}/vendors/images/apple-touch-icon.png" />
@@ -13,9 +13,9 @@
 
     <!-- Mobile Specific Metas -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-     <meta name="csrf-token" content="{{ csrf_token() }}">
-      @kropifyStyles
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    @kropifyStyles
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
@@ -30,17 +30,17 @@
 
 <body>
     {{-- <div class="pre-loader">
-			<div class="pre-loader-box">
-				<div class="loader-logo">
-					<img src="{{asset('backend')}}/vendors/images/deskapp-logo.svg" alt="" />
-				</div>
-				<div class="loader-progress" id="progress_div">
-					<div class="bar" id="bar1"></div>
-				</div>
-				<div class="percent" id="percent1">0%</div>
-				<div class="loading-text">Loading...</div>
-			</div>
-		</div> --}}
+        <div class="pre-loader-box">
+            <div class="loader-logo">
+                <img src="{{asset('backend')}}/vendors/images/deskapp-logo.svg" alt="" />
+            </div>
+            <div class="loader-progress" id="progress_div">
+                <div class="bar" id="bar1"></div>
+            </div>
+            <div class="percent" id="percent1">0%</div>
+            <div class="loading-text">Loading...</div>
+        </div>
+    </div> --}}
 
     <div class="header">
         <div class="header-left">
@@ -200,20 +200,18 @@
                 <h4 class="weight-600 font-18 pb-10">Menu Dropdown Icon</h4>
                 <div class="sidebar-radio-group pb-10 mb-10">
                     <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" id="sidebaricon-1" name="menu-dropdown-icon"
-                            class="custom-control-input" value="icon-style-1" checked="" />
-                        <label class="custom-control-label" for="sidebaricon-1"><i
-                                class="fa fa-angle-down"></i></label>
+                        <input type="radio" id="sidebaricon-1" name="menu-dropdown-icon" class="custom-control-input"
+                            value="icon-style-1" checked="" />
+                        <label class="custom-control-label" for="sidebaricon-1"><i class="fa fa-angle-down"></i></label>
                     </div>
                     <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" id="sidebaricon-2" name="menu-dropdown-icon"
-                            class="custom-control-input" value="icon-style-2" />
-                        <label class="custom-control-label" for="sidebaricon-2"><i
-                                class="ion-plus-round"></i></label>
+                        <input type="radio" id="sidebaricon-2" name="menu-dropdown-icon" class="custom-control-input"
+                            value="icon-style-2" />
+                        <label class="custom-control-label" for="sidebaricon-2"><i class="ion-plus-round"></i></label>
                     </div>
                     <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" id="sidebaricon-3" name="menu-dropdown-icon"
-                            class="custom-control-input" value="icon-style-3" />
+                        <input type="radio" id="sidebaricon-3" name="menu-dropdown-icon" class="custom-control-input"
+                            value="icon-style-3" />
                         <label class="custom-control-label" for="sidebaricon-3"><i
                                 class="fa fa-angle-double-right"></i></label>
                     </div>
@@ -222,40 +220,38 @@
                 <h4 class="weight-600 font-18 pb-10">Menu List Icon</h4>
                 <div class="sidebar-radio-group pb-30 mb-10">
                     <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" id="sidebariconlist-1" name="menu-list-icon"
-                            class="custom-control-input" value="icon-list-style-1" checked="" />
+                        <input type="radio" id="sidebariconlist-1" name="menu-list-icon" class="custom-control-input"
+                            value="icon-list-style-1" checked="" />
                         <label class="custom-control-label" for="sidebariconlist-1"><i
                                 class="ion-minus-round"></i></label>
                     </div>
                     <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" id="sidebariconlist-2" name="menu-list-icon"
-                            class="custom-control-input" value="icon-list-style-2" />
+                        <input type="radio" id="sidebariconlist-2" name="menu-list-icon" class="custom-control-input"
+                            value="icon-list-style-2" />
                         <label class="custom-control-label" for="sidebariconlist-2"><i class="fa fa-circle-o"
                                 aria-hidden="true"></i></label>
                     </div>
                     <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" id="sidebariconlist-3" name="menu-list-icon"
-                            class="custom-control-input" value="icon-list-style-3" />
-                        <label class="custom-control-label" for="sidebariconlist-3"><i
-                                class="dw dw-check"></i></label>
+                        <input type="radio" id="sidebariconlist-3" name="menu-list-icon" class="custom-control-input"
+                            value="icon-list-style-3" />
+                        <label class="custom-control-label" for="sidebariconlist-3"><i class="dw dw-check"></i></label>
                     </div>
                     <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" id="sidebariconlist-4" name="menu-list-icon"
-                            class="custom-control-input" value="icon-list-style-4" checked="" />
+                        <input type="radio" id="sidebariconlist-4" name="menu-list-icon" class="custom-control-input"
+                            value="icon-list-style-4" checked="" />
                         <label class="custom-control-label" for="sidebariconlist-4"><i
                                 class="icon-copy dw dw-next-2"></i></label>
                     </div>
                     <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" id="sidebariconlist-5" name="menu-list-icon"
-                            class="custom-control-input" value="icon-list-style-5" />
+                        <input type="radio" id="sidebariconlist-5" name="menu-list-icon" class="custom-control-input"
+                            value="icon-list-style-5" />
                         <label class="custom-control-label" for="sidebariconlist-5"><i
                                 class="dw dw-fast-forward-1"></i></label>
                     </div>
                     <div class="custom-control custom-radio custom-control-inline">
-                        <input type="radio" id="sidebariconlist-6" name="menu-list-icon"
-                            class="custom-control-input" value="icon-list-style-6" />
-                        <label class="custom-control-label" for="sidebariconlist-6"><i
-                                class="dw dw-next"></i></label>
+                        <input type="radio" id="sidebariconlist-6" name="menu-list-icon" class="custom-control-input"
+                            value="icon-list-style-6" />
+                        <label class="custom-control-label" for="sidebariconlist-6"><i class="dw dw-next"></i></label>
                     </div>
                 </div>
 
@@ -271,10 +267,8 @@
     <div class="left-side-bar">
         <div class="brand-logo">
             <a href="index.html">
-                <img src="{{ asset('backend') }}/vendors/images/deskapp-logo.svg" alt=""
-                    class="dark-logo" />
-                <img src="{{ asset('backend') }}/vendors/images/deskapp-logo-white.svg" alt=""
-                    class="light-logo" />
+                <img src="{{ asset('backend') }}/vendors/images/deskapp-logo.svg" alt="" class="dark-logo" />
+                <img src="{{ asset('backend') }}/vendors/images/deskapp-logo-white.svg" alt="" class="light-logo" />
             </a>
             <div class="close-sidebar" data-toggle="left-sidebar-close">
                 <i class="ion-close-round"></i>
@@ -290,31 +284,25 @@
                         </a>
                     </li>
                     <li>
-                        <a href="" class="dropdown-toggle no-arrow">
-                            <span class="micon fa fa-th-list"></span><span class="mtext">categories</span>
+                        <a href="{{ route('admin.categories') }}"
+                            class="dropdown-toggle no-arrow {{ Route::is('admin.categories') ? 'active' : '' }}">
+                            <span class="micon fa fa-clone"></span><span class="mtext">Categories</span>
                         </a>
                     </li>
                     <li class="dropdown">
-                        <a href="javascript:;" class="dropdown-toggle">
-                            <span class="micon fa fa-newspaper-o"></span><span class="mtext">posts </span>
+                        <a href="javascript:;" class="dropdown-toggle {{ Route::is('admin.posts.*') ? 'active' : '' }}">
+                            <span class="micon fa fa-newspaper-o"></span><span class="mtext">Posts</span>
                         </a>
                         <ul class="submenu">
-                            <li><a href="ui-buttons.html">new</a></li>
-                            <li><a href="ui-cards.html">posts</a></li>
-
+                            <li><a href="{{ route('admin.posts.index') }}" class="{{ Route::is('admin.posts.index') ? 'active' : '' }}">All Posts</a></li>
+                            <li><a href="{{ route('admin.posts.create') }}" class="{{ Route::is('admin.posts.create') ? 'active' : '' }}">Add New</a></li>
                         </ul>
                     </li>
-                    <li class="dropdown">
-                        <a href="javascript:;" class="dropdown-toggle">
-                            <span class="micon fa fa-shopping-bag"></span><span class="mtext">shop</span>
+                    <li>
+                        <a href="{{ route('admin.tags') }}" class="dropdown-toggle no-arrow {{ Route::is('admin.tags') ? 'active' : '' }}">
+                            <span class="micon fa fa-tags"></span><span class="mtext">Tags</span>
                         </a>
-                        <ul class="submenu">
-                            <li><a href="bootstrap-icon.html">new product</a></li>
-                            <li><a href="font-awesome.html"> all products</a></li>
-
-                        </ul>
-
-
+                    </li>
                     <li>
                         <a href="invoice.html" class="dropdown-toggle no-arrow">
                             <span class="micon bi bi-receipt-cutoff"></span><span class="mtext">Invoice</span>
@@ -335,7 +323,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.settings') }}"  class="dropdown-toggle no-arrow">
+                        <a href="{{ route('admin.settings') }}" class="dropdown-toggle no-arrow">
                             <span class="micon fa fa-cogs"></span>
                             <span class="mtext">general
                             </span>
@@ -352,7 +340,11 @@
             <div class="min-height-200px">
 
                 <div class="">
-                    @yield('content')
+                    @if(isset($slot))
+                        {{ $slot }}
+                    @else
+                        @yield('content')
+                    @endif
                 </div>
             </div>
             <div class="footer-wrap pd-20 mb-20 card-box">
@@ -368,7 +360,7 @@
     <script src="{{ asset('backend') }}/vendors/scripts/process.js"></script>
     <script src="{{ asset('backend') }}/vendors/scripts/layout-settings.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-   @kropifyScripts
+    @kropifyScripts
     <!-- Global SweetAlert Handler for Livewire -->
     <script>
         document.addEventListener('livewire:initialized', () => {
@@ -405,9 +397,9 @@
                 Swal.fire({
                     toast: true,
                     position: 'top-end',
-                    icon : 'warning',
+                    icon: 'warning',
                     // title: message.title || 'Warning',
-                    text : message.message || '',
+                    text: message.message || '',
                     showConfirmButton: false,
                     timer: 3500,
                     timerProgressBar: true
