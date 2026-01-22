@@ -68,7 +68,26 @@
         </div>
         <div class="tab-pane fade  {{ $tab=='logo_favicon' ? 'show active' : '' }}" id="logo_favicon" role="tabpanel">
             <div class="pd-20">
-               fewrwe
+               <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <h5>site logo</h5>
+                        <div class="mb-2 mt-1" style="max-width:200px">
+                            <img wire:ignore id="preview_site_logo" src="" alt="">
+
+
+
+                        </div>
+                        <form action="" method="post" enctype="multipart/form-data" id="logoForm">
+                            @csrf
+                            <div class="mb-2">
+                               <input type="file" name="site_logo" id="site_logo">
+                                @error('site_logo') <span class="text-danger">{{ $message }}</span> @enderror
+                            </div>
+                            <button type="submit" class="btn btn-primary">update logo</button>
+                        </form>
+                    </div>
+               </div>
             </div>
         </div>
 
