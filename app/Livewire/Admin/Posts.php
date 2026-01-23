@@ -5,10 +5,11 @@ namespace App\Livewire\Admin;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Post;
+use App\Traits\AlertTrait;
 
 class Posts extends Component
 {
-    use WithPagination;
+    use WithPagination, AlertTrait;
 
     public $search;
 
@@ -27,14 +28,18 @@ class Posts extends Component
 
     public function delete($id)
     {
-        $post = Post::find($id);
-        if ($post) {
-            // Delete image if exists
-            if ($post->featured_image && \File::exists(public_path('storage/images/posts/' . $post->featured_image))) {
-                \File::delete(public_path('storage/images/posts/' . $post->featured_image));
+        try {
+            $post = Post::find($id);
+            if ($post) {
+                // Delete image if exists
+                if ($post->featured_image && \File::exists(public_path('storage/images/posts/' . $post->featured_image))) {
+                    \File::delete(public_path('storage/images/posts/' . $post->featured_image));
+                }
+                $post->delete();
+                $this->successAlert('Deleted', 'Post deleted successfully!');
             }
-            $post->delete();
-            $this->dispatch('swal:success', ['message' => 'Post Deleted Successfully']);
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong while deleting post.');
         }
     }
 }

@@ -3,10 +3,13 @@
 namespace App\Livewire\Admin;
 
 use App\Models\Permission;
+use App\Traits\AlertTrait;
 use Livewire\Component;
 
 class Permissions extends Component
 {
+    use AlertTrait;
+
     public $permissions;
     public $name, $slug, $group_name, $permission_id;
     public $isEdit = false;
@@ -43,16 +46,20 @@ class Permissions extends Component
             'group_name' => 'required',
         ]);
 
-        Permission::create([
-            'name' => $this->name,
-            'slug' => $this->slug,
-            'group_name' => $this->group_name,
-        ]);
+        try {
+            Permission::create([
+                'name' => $this->name,
+                'slug' => $this->slug,
+                'group_name' => $this->group_name,
+            ]);
 
-        $this->mount(); // Refresh list
-        $this->dispatch('close-modal'); // Assuming you have JS to handle this or use dispatchBrowserEvent
-        $this->resetFields();
-        // Emit toast
+            $this->mount(); // Refresh list
+            $this->dispatch('close-modal');
+            $this->resetFields();
+            $this->successAlert('Success', 'Permission created successfully!');
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong while creating the permission.');
+        }
     }
 
     public function editPermission($id)
@@ -73,21 +80,31 @@ class Permissions extends Component
             'group_name' => 'required',
         ]);
 
-        $permission = Permission::findOrFail($this->permission_id);
-        $permission->update([
-            'name' => $this->name,
-            'slug' => $this->slug,
-            'group_name' => $this->group_name,
-        ]);
+        try {
+            $permission = Permission::findOrFail($this->permission_id);
+            $permission->update([
+                'name' => $this->name,
+                'slug' => $this->slug,
+                'group_name' => $this->group_name,
+            ]);
 
-        $this->mount();
-        $this->dispatch('close-modal');
-        $this->resetFields();
+            $this->mount();
+            $this->dispatch('close-modal');
+            $this->resetFields();
+            $this->successAlert('Success', 'Permission updated successfully!');
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong while updating the permission.');
+        }
     }
 
     public function deletePermission($id)
     {
-        Permission::findOrFail($id)->delete();
-        $this->mount();
+        try {
+            Permission::findOrFail($id)->delete();
+            $this->mount();
+            $this->successAlert('Deleted', 'Permission deleted successfully!');
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong while deleting the permission.');
+        }
     }
 }

@@ -7,11 +7,12 @@ use Livewire\WithFileUploads;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
+use App\Traits\AlertTrait;
 use Illuminate\Support\Str;
 
 class EditPost extends Component
 {
-    use WithFileUploads;
+    use WithFileUploads, AlertTrait;
 
     public $postId;
     public $title;
@@ -80,7 +81,7 @@ class EditPost extends Component
             $post->tags()->detach();
         }
 
-        $this->dispatch('swal:success', ['message' => 'Post Updated Successfully']);
+        $this->successAlert('Success', 'Post updated successfully!');
         return redirect()->route('admin.posts.index');
     }
 

@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use App\UserStatus;
 use App\UserType;
 use App\Models\UserSocialLink;
+use App\Models\Role;
 
 class User extends Authenticatable
 {

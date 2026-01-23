@@ -4,10 +4,13 @@ namespace App\Livewire\Admin;
 
 use Livewire\Component;
 use App\Models\Tag;
+use App\Traits\AlertTrait;
 use Illuminate\Support\Str;
 
 class Tags extends Component
 {
+    use AlertTrait;
+
     public $tags;
     public $name;
     public $slug;
@@ -40,13 +43,17 @@ class Tags extends Component
             'slug' => 'required|unique:tags,slug',
         ]);
 
-        Tag::create([
-            'name' => $this->name,
-            'slug' => $this->slug,
-        ]);
+        try {
+            Tag::create([
+                'name' => $this->name,
+                'slug' => $this->slug,
+            ]);
 
-        $this->dispatch('swal:success', ['message' => 'Tag Created Successfully']);
-        $this->resetInputFields();
+            $this->successAlert('Success', 'Tag created successfully!');
+            $this->resetInputFields();
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong while creating tag.');
+        }
     }
 
     public function edit($id)
@@ -65,19 +72,27 @@ class Tags extends Component
             'slug' => 'required|unique:tags,slug,' . $this->tagId,
         ]);
 
-        $tag = Tag::find($this->tagId);
-        $tag->update([
-            'name' => $this->name,
-            'slug' => $this->slug,
-        ]);
+        try {
+            $tag = Tag::find($this->tagId);
+            $tag->update([
+                'name' => $this->name,
+                'slug' => $this->slug,
+            ]);
 
-        $this->dispatch('showToast', ['type' => 'success', 'message' => 'Tag Updated Successfully']);
-        $this->resetInputFields();
+            $this->successAlert('Success', 'Tag updated successfully!');
+            $this->resetInputFields();
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong while updating tag.');
+        }
     }
 
     public function delete($id)
     {
-        Tag::find($id)->delete();
-        $this->dispatch('showToast', ['type' => 'success', 'message' => 'Tag Deleted Successfully']);
+        try {
+            Tag::find($id)->delete();
+            $this->successAlert('Deleted', 'Tag deleted successfully!');
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong while deleting tag.');
+        }
     }
 }

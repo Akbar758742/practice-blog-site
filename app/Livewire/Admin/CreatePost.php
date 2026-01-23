@@ -7,11 +7,12 @@ use Livewire\WithFileUploads;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
+use App\Traits\AlertTrait;
 use Illuminate\Support\Str;
 
 class CreatePost extends Component
 {
-    use WithFileUploads;
+    use WithFileUploads, AlertTrait;
 
     public $title;
     public $slug;
@@ -59,7 +60,7 @@ class CreatePost extends Component
             $post->tags()->sync($this->selectedTags);
         }
 
-        $this->dispatch('swal:success', ['message' => 'Post Created Successfully']);
+        $this->successAlert('Success', 'Post created successfully!');
         return redirect()->route('admin.posts.index');
     }
 

@@ -4,10 +4,13 @@ namespace App\Livewire\Admin;
 
 use App\Models\Role;
 use App\Models\Permission;
+use App\Traits\AlertTrait;
 use Livewire\Component;
 
 class Roles extends Component
 {
+    use AlertTrait;
+
     public $roles;
     public $name, $slug, $role_id;
     public $selectedPermissions = [];
@@ -46,16 +49,21 @@ class Roles extends Component
             'slug' => 'required|unique:roles,slug',
         ]);
 
-        $role = Role::create([
-            'name' => $this->name,
-            'slug' => $this->slug,
-        ]);
+        try {
+            $role = Role::create([
+                'name' => $this->name,
+                'slug' => $this->slug,
+            ]);
 
-        $role->permissions()->sync($this->selectedPermissions);
+            $role->permissions()->sync($this->selectedPermissions);
 
-        $this->mount();
-        $this->dispatch('close-modal');
-        $this->resetFields();
+            $this->mount();
+            $this->dispatch('close-modal');
+            $this->resetFields();
+            $this->successAlert('Success', 'Role created successfully!');
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong while creating the role.');
+        }
     }
 
     public function editRole($id)
@@ -75,22 +83,32 @@ class Roles extends Component
             'slug' => 'required|unique:roles,slug,' . $this->role_id,
         ]);
 
-        $role = Role::findOrFail($this->role_id);
-        $role->update([
-            'name' => $this->name,
-            'slug' => $this->slug,
-        ]);
+        try {
+            $role = Role::findOrFail($this->role_id);
+            $role->update([
+                'name' => $this->name,
+                'slug' => $this->slug,
+            ]);
 
-        $role->permissions()->sync($this->selectedPermissions);
+            $role->permissions()->sync($this->selectedPermissions);
 
-        $this->mount();
-        $this->dispatch('close-modal');
-        $this->resetFields();
+            $this->mount();
+            $this->dispatch('close-modal');
+            $this->resetFields();
+            $this->successAlert('Success', 'Role updated successfully!');
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong while updating the role.');
+        }
     }
 
     public function deleteRole($id)
     {
-        Role::findOrFail($id)->delete();
-        $this->mount();
+        try {
+            Role::findOrFail($id)->delete();
+            $this->mount();
+            $this->successAlert('Deleted', 'Role deleted successfully!');
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong while deleting the role.');
+        }
     }
 }

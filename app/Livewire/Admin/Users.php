@@ -4,13 +4,14 @@ namespace App\Livewire\Admin;
 
 use App\Models\User;
 use App\Models\Role;
+use App\Traits\AlertTrait;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class Users extends Component
 {
-    use WithPagination;
+    use WithPagination, AlertTrait;
 
     public $name, $email, $password, $user_id, $role_id;
     public $isOpen = false;
@@ -54,22 +55,26 @@ class Users extends Component
             'role_id' => 'required|exists:roles,id',
         ]);
 
-        $user = User::create([
-            'name' => $this->name,
-            'email' => $this->email,
-            'password' => Hash::make($this->password),
-            'username' => \Str::slug($this->name) . '-' . rand(1000, 9999),
-            'status' => \App\UserStatus::ACTIVE, // Set default status
-        ]);
+        try {
+            $user = User::create([
+                'name' => $this->name,
+                'email' => $this->email,
+                'password' => Hash::make($this->password),
+                'username' => \Str::slug($this->name) . '-' . rand(1000, 9999),
+                'status' => \App\UserStatus::ACTIVE, // Set default status
+            ]);
 
-        // Ensure role_id is cast to integer and attach
-        if ($this->role_id) {
-            $user->roles()->attach((int) $this->role_id);
+            // Ensure role_id is cast to integer and attach
+            if ($this->role_id) {
+                $user->roles()->attach((int) $this->role_id);
+            }
+
+            $this->resetInputFields();
+            $this->dispatch('close-modal');
+            $this->successAlert('Success', 'User created successfully!');
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong while creating the user.');
         }
-
-        $this->resetInputFields();
-        $this->dispatch('close-modal');
-        $this->dispatch('swal:success', ['message' => 'User created successfully!']);
     }
 
     public function edit($id)
@@ -90,24 +95,34 @@ class Users extends Component
             'role_id' => 'required',
         ]);
 
-        $user = User::findOrFail($this->user_id);
-        $user->update([
-            'name' => $this->name,
-            'email' => $this->email,
-        ]);
+        try {
+            $user = User::findOrFail($this->user_id);
+            $user->update([
+                'name' => $this->name,
+                'email' => $this->email,
+            ]);
 
-        if ($this->password) {
-            $user->update(['password' => Hash::make($this->password)]);
+            if ($this->password) {
+                $user->update(['password' => Hash::make($this->password)]);
+            }
+
+            $user->roles()->sync([$this->role_id]);
+
+            $this->resetInputFields();
+            $this->dispatch('close-modal');
+            $this->successAlert('Success', 'User updated successfully!');
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong while updating the user.');
         }
-
-        $user->roles()->sync([$this->role_id]);
-
-        $this->resetInputFields();
-        $this->dispatch('close-modal');
     }
 
     public function delete($id)
     {
-        User::findOrFail($id)->delete();
+        try {
+            User::findOrFail($id)->delete();
+            $this->successAlert('Deleted', 'User deleted successfully!');
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong while deleting the user.');
+        }
     }
 }

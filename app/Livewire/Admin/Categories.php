@@ -4,10 +4,13 @@ namespace App\Livewire\Admin;
 
 use Livewire\Component;
 use App\Models\Category;
+use App\Traits\AlertTrait;
 use Illuminate\Support\Str;
 
 class Categories extends Component
 {
+    use AlertTrait;
+
     public $categories;
     public $name;
     public $slug;
@@ -44,14 +47,18 @@ class Categories extends Component
             'slug' => 'required|unique:categories,slug',
         ]);
 
-        Category::create([
-            'name' => $this->name,
-            'slug' => $this->slug,
-            'parent_id' => $this->parent_id ?: null,
-        ]);
+        try {
+            Category::create([
+                'name' => $this->name,
+                'slug' => $this->slug,
+                'parent_id' => $this->parent_id ?: null,
+            ]);
 
-        $this->dispatch('swal:success', ['message' => 'Category Created Successfully']);
-        $this->resetInputFields();
+            $this->successAlert('Success', 'Category created successfully!');
+            $this->resetInputFields();
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong while creating category.');
+        }
     }
 
     public function edit($id)
@@ -71,20 +78,28 @@ class Categories extends Component
             'slug' => 'required|unique:categories,slug,' . $this->categoryId,
         ]);
 
-        $category = Category::find($this->categoryId);
-        $category->update([
-            'name' => $this->name,
-            'slug' => $this->slug,
-            'parent_id' => $this->parent_id ?: null,
-        ]);
+        try {
+            $category = Category::find($this->categoryId);
+            $category->update([
+                'name' => $this->name,
+                'slug' => $this->slug,
+                'parent_id' => $this->parent_id ?: null,
+            ]);
 
-        $this->dispatch('showToast', ['type' => 'success', 'message' => 'Category Updated Successfully']);
-        $this->resetInputFields();
+            $this->successAlert('Success', 'Category updated successfully!');
+            $this->resetInputFields();
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong while updating category.');
+        }
     }
 
     public function delete($id)
     {
-        Category::find($id)->delete();
-        $this->dispatch('showToast', ['type' => 'success', 'message' => 'Category Deleted Successfully']);
+        try {
+            Category::find($id)->delete();
+            $this->successAlert('Deleted', 'Category deleted successfully!');
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong while deleting category.');
+        }
     }
 }
