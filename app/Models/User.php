@@ -69,10 +69,29 @@ class User extends Authenticatable
     }
     public function getPictureAttribute($value)
     {
-        return $value? asset('/images/users/'.$value) : asset('images/users/default.jpg');
+        return $value ? asset('/images/users/' . $value) : asset('images/users/default.jpg');
     }
     public function socialLinks()
     {
-        return $this->belongsTo(UserSocialLink::class, 'id','user_id');
+        return $this->belongsTo(UserSocialLink::class, 'id', 'user_id');
+    }
+
+    // RBAC Relationships & Methods
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'role_user');
+    }
+
+    public function hasRole($role)
+    {
+        return $this->roles()->where('slug', $role)->exists();
+    }
+
+    public function hasPermission($permission)
+    {
+        return $this->roles()
+            ->whereHas('permissions', function ($q) use ($permission) {
+                $q->where('slug', $permission);
+            })->exists();
     }
 }

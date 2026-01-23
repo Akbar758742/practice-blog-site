@@ -42,6 +42,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('settings', 'generalSettingsUpdate')->name('settings.update');
             Route::get('/categories', \App\Livewire\Admin\Categories::class)->name('categories');
             Route::get('/tags', \App\Livewire\Admin\Tags::class)->name('tags');
+            Route::get('/permissions', \App\Livewire\Admin\Permissions::class)->name('permissions');
+            Route::get('/roles', \App\Livewire\Admin\Roles::class)->name('roles');
+            Route::get('/users', \App\Livewire\Admin\Users::class)->name('users');
             Route::prefix('posts')->name('posts.')->group(function () {
                 Route::get('/', \App\Livewire\Admin\Posts::class)->name('index');
                 Route::get('/create', \App\Livewire\Admin\CreatePost::class)->name('create');

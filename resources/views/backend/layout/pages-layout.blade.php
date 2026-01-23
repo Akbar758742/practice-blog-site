@@ -294,12 +294,15 @@
                             <span class="micon fa fa-newspaper-o"></span><span class="mtext">Posts</span>
                         </a>
                         <ul class="submenu">
-                            <li><a href="{{ route('admin.posts.index') }}" class="{{ Route::is('admin.posts.index') ? 'active' : '' }}">All Posts</a></li>
-                            <li><a href="{{ route('admin.posts.create') }}" class="{{ Route::is('admin.posts.create') ? 'active' : '' }}">Add New</a></li>
+                            <li><a href="{{ route('admin.posts.index') }}"
+                                    class="{{ Route::is('admin.posts.index') ? 'active' : '' }}">All Posts</a></li>
+                            <li><a href="{{ route('admin.posts.create') }}"
+                                    class="{{ Route::is('admin.posts.create') ? 'active' : '' }}">Add New</a></li>
                         </ul>
                     </li>
                     <li>
-                        <a href="{{ route('admin.tags') }}" class="dropdown-toggle no-arrow {{ Route::is('admin.tags') ? 'active' : '' }}">
+                        <a href="{{ route('admin.tags') }}"
+                            class="dropdown-toggle no-arrow {{ Route::is('admin.tags') ? 'active' : '' }}">
                             <span class="micon fa fa-tags"></span><span class="mtext">Tags</span>
                         </a>
                     </li>
@@ -307,6 +310,20 @@
                         <a href="invoice.html" class="dropdown-toggle no-arrow">
                             <span class="micon bi bi-receipt-cutoff"></span><span class="mtext">Invoice</span>
                         </a>
+                    </li>
+                    <li class="dropdown">
+                        <a href="javascript:;"
+                            class="dropdown-toggle {{ Route::is('admin.users') || Route::is('admin.roles') || Route::is('admin.permissions') ? 'active' : '' }}">
+                            <span class="micon fa fa-users"></span><span class="mtext">User Management</span>
+                        </a>
+                        <ul class="submenu">
+                            <li><a href="{{ route('admin.users') }}"
+                                    class="{{ Route::is('admin.users') ? 'active' : '' }}">All Users</a></li>
+                            <li><a href="{{ route('admin.roles') }}"
+                                    class="{{ Route::is('admin.roles') ? 'active' : '' }}">Roles</a></li>
+                            <li><a href="{{ route('admin.permissions') }}"
+                                    class="{{ Route::is('admin.permissions') ? 'active' : '' }}">Permissions</a></li>
+                        </ul>
                     </li>
                     <li>
                         <div class="dropdown-divider"></div>
