@@ -22,6 +22,43 @@ class Dashboard extends Component
     public $recentPosts;
     public $popularPosts;
 
+    public $postsToday;
+    public $postsThisWeek;
+    public $newUsersThisWeek;
+
+    public $postsWithoutCategory;
+    public $postsWithoutImage;
+    // public $postsWithoutMeta; // meta_desc is nullable, checking null
+    public $oldDrafts;
+    public $postsNeedingUpdate;
+
+    public $activeFilter = 'latest'; // latest, drafts, scheduled
+
+    public function setFilter($filter)
+    {
+        $this->activeFilter = $filter;
+        $this->loadRecentPosts();
+    }
+
+    public function loadRecentPosts()
+    {
+        $query = Post::with('user', 'category');
+
+        if ($this->activeFilter === 'drafts') {
+            $query->where('is_published', false);
+        } elseif ($this->activeFilter === 'scheduled') {
+            // Assuming scheduled means published_at > now or specific status
+            $query->where('is_published', true)->where('published_at', '>', now());
+        } else {
+            // Default to latest published or just latest created
+            if ($this->activeFilter === 'published') {
+                $query->where('is_published', true)->where('published_at', '<=', now());
+            }
+        }
+
+        $this->recentPosts = $query->latest()->take(5)->get();
+    }
+
     public function mount()
     {
         $this->totalPosts = Post::count();
@@ -31,15 +68,20 @@ class Dashboard extends Component
 
         $this->publishedPosts = Post::where('is_published', true)->count();
         $this->draftPosts = Post::where('is_published', false)->count();
-        // Assuming scheduled posts might be handled differently or just defined by published_at > now
-        // For now, let's stick to the 'is_published' flag or simple logic. 
-        // If there's no specific 'scheduled' status, we can omit it or refine logic.
-        // Let's assume draft = !is_published. Additional status logic can be added later.
 
-        $this->recentPosts = Post::with('user', 'category')
-            ->latest()
-            ->take(5)
-            ->get();
+        // 1. Time-based Metrics
+        $this->postsToday = Post::whereDate('created_at', today())->count();
+        $this->postsThisWeek = Post::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->where('is_published', true)->count();
+        $this->newUsersThisWeek = User::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count();
+
+        // 2. Content Health
+        $this->postsWithoutCategory = Post::whereNull('category_id')->count();
+        $this->postsWithoutImage = Post::whereNull('featured_image')->count();
+        $this->oldDrafts = Post::where('is_published', false)->where('updated_at', '<', now()->subDays(30))->count();
+        $this->postsNeedingUpdate = Post::where('is_published', true)->where('updated_at', '<', now()->subMonths(6))->count();
+
+        // 3. Initial Recent Posts
+        $this->loadRecentPosts();
 
         $this->popularPosts = Post::with('user')
             ->orderBy('views', 'desc')
