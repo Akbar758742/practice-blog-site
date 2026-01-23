@@ -22,6 +22,7 @@ return new class extends Migration {
             $table->timestamp('published_at')->nullable();
             $table->string('meta_title')->nullable();
             $table->text('meta_desc')->nullable();
+            $table->integer('views')->default(0);
             $table->timestamps();
         });
     }

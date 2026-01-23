@@ -31,6 +31,8 @@
                                 <span>{{ $post->published_at ? $post->published_at->format('M d') : '' }}</span>
                                 <span class="mx-2">&bull;</span>
                                 <span>{{ $post->user ? $post->user->name : 'Admin' }}</span>
+                                <span class="mx-2">&bull;</span>
+                                <span>{{ $post->views }} Views</span>
                             </div>
                         </div>
                     </div>

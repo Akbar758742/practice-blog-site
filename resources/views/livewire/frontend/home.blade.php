@@ -19,14 +19,17 @@
                         <a href="{{ route('post.single', $featuredPost->slug) }}">{{ $featuredPost->title }}</a>
                     </h1>
                     <p class="text-gray-300 mb-6 line-clamp-2 md:text-lg">
-                        {{ Str::limit(strip_tags($featuredPost->content), 150) }}</p>
+                        {{ Str::limit(strip_tags($featuredPost->content), 150) }}
+                    </p>
                     <div class="flex items-center space-x-4">
                         {{-- <img src="https://ui-avatars.com/api/?name={{ $featuredPost->user->name }}"
                             class="w-10 h-10 rounded-full border-2 border-white"> --}}
                         <div>
                             <p class="font-semibold">{{ $featuredPost->user ? $featuredPost->user->name : 'Admin' }}</p>
                             <p class="text-gray-400 text-sm">
-                                {{ $featuredPost->published_at ? $featuredPost->published_at->format('M d, Y') : '' }}</p>
+                                {{ $featuredPost->published_at ? $featuredPost->published_at->format('M d, Y') : '' }}
+                                &bull; {{ $featuredPost->views }} Views
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -74,6 +77,8 @@
                                 <span>{{ $post->published_at ? $post->published_at->format('M d') : '' }}</span>
                                 <span class="mx-2">&bull;</span>
                                 <span>{{ $post->user ? $post->user->name : 'Admin' }}</span>
+                                <span class="mx-2">&bull;</span>
+                                <span>{{ $post->views }} Views</span>
                             </div>
                             {{-- <button class="text-indigo-600 hover:text-indigo-800">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
