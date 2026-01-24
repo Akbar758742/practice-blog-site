@@ -32,6 +32,12 @@ class Dashboard extends Component
     public $oldDrafts;
     public $postsNeedingUpdate;
 
+    // New Stats
+    public $postsByAuthors;
+    public $postsByAdmins;
+    public $totalComments;
+    public $pendingComments;
+
     public $activeFilter = 'latest'; // latest, drafts, scheduled
 
     public function setFilter($filter)
@@ -77,8 +83,21 @@ class Dashboard extends Component
         // 2. Content Health
         $this->postsWithoutCategory = Post::whereNull('category_id')->count();
         $this->postsWithoutImage = Post::whereNull('featured_image')->count();
-        $this->oldDrafts = Post::where('status', 'draft')->where('updated_at', '<', now()->subDays(30))->count();
-        $this->postsNeedingUpdate = Post::where('status', 'published')->where('updated_at', '<', now()->subMonths(6))->count();
+        $this->oldDrafts = Post::where('status', 'draft')->where('updated_at', '<', now()->subDays(30))->count('*');
+        $this->postsNeedingUpdate = Post::where('status', 'published')->where('updated_at', '<', now()->subMonths(6))->count('*');
+
+        // 2b. Role-based Post Stats
+        $this->postsByAuthors = Post::whereHas('user.roles', function ($q) {
+            $q->where('slug', 'author');
+        })->count();
+
+        $this->postsByAdmins = Post::whereHas('user.roles', function ($q) {
+            $q->whereIn('slug', ['admin', 'editor']);
+        })->count();
+
+        // 2c. Comment Stats
+        $this->totalComments = \App\Models\Comment::count();
+        $this->pendingComments = \App\Models\Comment::where('status', 'pending')->count();
 
         // 3. Initial Recent Posts
         $this->loadRecentPosts();

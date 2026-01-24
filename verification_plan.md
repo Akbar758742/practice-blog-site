@@ -29,10 +29,24 @@
 - [ ] Delete a comment
 - [ ] Verify functionality of 'Comments Allowed' toggle on Post Create/Edit
 
-## 4. Page Management
-- [ ] Login as Admin
-- [ ] Navigate to 'Pages' in Sidebar
-- [ ] Create a new page (Title, Slug, Content, Visibility, SEO)
-- [ ] Edit existing page
-- [ ] Delete page
-- [ ] Verify non-admin users cannot access Page Management
+## 4. Frontend Comments
+- [ ] **Submit Comment**:
+    - [ ] Login as any user.
+    - [ ] Go to any single post page.
+    - [ ] Submit a comment.
+    - [ ] Verify "Comment submitted" message.
+- [ ] **Guest Access**:
+    - [ ] Logout and verify "Name" and "Email" fields appear.
+    - [ ] Submit as guest.
+- [ ] **Nested Replies**:
+    - [ ] Click reply on a comment, verify nesting.
+
+## 5. Dashboard Summaries (NEW)
+- [ ] **Login as Admin**:
+- [ ] **Dashboard Widgets**:
+    - [ ] Verify "Total Comments" widget.
+    - [ ] Verify "Posts by Role" (Admins vs Authors) progress bar/stats.
+    - [ ] Verify "Pending Comments" count.
+- [ ] **Posts List**:
+    - [ ] Go to Posts -> All Posts.
+    - [ ] Verify "Comments" column shows the number of comments for each post.

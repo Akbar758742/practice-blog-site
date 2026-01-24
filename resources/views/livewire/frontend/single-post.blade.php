@@ -69,6 +69,11 @@
         </div>
     </article>
 
+    {{-- Comments Section --}}
+    @if($post->comments_allowed)
+        <livewire:frontend.post-comments :post="$post" />
+    @endif
+
     <div class="mt-8 text-center mb-16">
         <a href="/" class="inline-flex items-center font-medium text-indigo-600 hover:text-indigo-800 transition">
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

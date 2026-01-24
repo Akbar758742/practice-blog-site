@@ -19,6 +19,7 @@
                             <th>Title</th>
                             <th>Category</th>
                             <th>Status</th>
+                            <th>Comments</th>
                             <th>Date</th>
                             <th>Actions</th>
                         </tr>
@@ -46,6 +47,9 @@
                                     @else
                                         <span class="badge badge-secondary">Archived</span>
                                     @endif
+                                </td>
+                                <td>
+                                    <span class="badge badge-pill badge-secondary">{{ $post->comments_count }}</span>
                                 </td>
                                 <td>{{ $post->created_at ? $post->created_at->format('d M, Y') : '-' }}</td>
                                 <td>

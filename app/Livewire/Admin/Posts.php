@@ -16,6 +16,7 @@ class Posts extends Component
     public function render()
     {
         $query = Post::with(['category', 'user'])
+            ->withCount('comments') // Added withCount('comments')
             ->when($this->search, function ($query) {
                 $query->where('title', 'like', '%' . $this->search . '%');
             });

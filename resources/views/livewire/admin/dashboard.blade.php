@@ -49,6 +49,22 @@
             <div class="card-box height-100-p widget-style3">
                 <div class="d-flex flex-wrap">
                     <div class="widget-data">
+                        <div class="weight-700 font-24 text-dark">{{ $totalComments }}</div>
+                        <div class="font-14 text-secondary weight-500">Total Comments</div>
+                    </div>
+                    <div class="widget-icon">
+                        <div class="icon" data-color="#ffc107">
+                            <i class="icon-copy dw dw-chat-3"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+            <div class="card-box height-100-p widget-style3">
+                <div class="d-flex flex-wrap">
+                    <div class="widget-data">
                         <div class="weight-700 font-24 text-dark">{{ $totalUsers }}</div>
                         <div class="font-14 text-secondary weight-500">Total Users</div>
                     </div>
@@ -62,6 +78,45 @@
         </div>
     </div>
 
+    <!-- Role Stats & Pending Comments -->
+    <div class="row pb-10">
+        <div class="col-md-6 mb-20">
+            <div class="card-box height-100-p pd-20">
+                <div class="h5 mb-0">Posts by Role</div>
+                <div class="d-flex justify-content-between mt-3">
+                    <div>
+                        <span class="d-block text-secondary font-12">Admins/Editors</span>
+                        <span class="h3 text-primary">{{ $postsByAdmins }}</span>
+                    </div>
+                    <div>
+                        <span class="d-block text-secondary font-12">Authors</span>
+                        <span class="h3 text-success">{{ $postsByAuthors }}</span>
+                    </div>
+                </div>
+                <div class="progress mt-3" style="height: 6px;">
+                    @php
+                        $totalRolePosts = $postsByAdmins + $postsByAuthors;
+                        $adminPercent = $totalRolePosts > 0 ? ($postsByAdmins / $totalRolePosts) * 100 : 0;
+                    @endphp
+                    <div class="progress-bar bg-primary" role="progressbar" style="width: {{ $adminPercent }}%"></div>
+                    <div class="progress-bar bg-success" role="progressbar" style="width: {{ 100 - $adminPercent }}%">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-20">
+            <div class="card-box height-100-p pd-20">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="h5 mb-0">Pending Comments</div>
+                    <a href="{{ route('admin.comments') }}" class="btn btn-sm btn-outline-primary">Moderate</a>
+                </div>
+                <div class="mt-3">
+                    <div class="h2 text-warning">{{ $pendingComments }}</div>
+                    <div class="font-14 text-secondary">Comments waiting for approval</div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Mini Stats & Health Warnings -->
     <div class="row pb-10">
         <!-- Today/This Week Metrics -->
