@@ -52,7 +52,7 @@ class PostSeeder extends Seeder
                 'slug' => $slug,
                 'content' => $faker->paragraphs(5, true),
                 'featured_image' => null, // User will add images later
-                'is_published' => true,
+                'status' => 'published',
                 'published_at' => now()->subDays(rand(0, 30)),
                 'meta_title' => $title,
                 'meta_desc' => $faker->sentence(10),

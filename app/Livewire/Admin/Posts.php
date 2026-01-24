@@ -15,12 +15,17 @@ class Posts extends Component
 
     public function render()
     {
-        $posts = Post::with(['category', 'user'])
+        $query = Post::with(['category', 'user'])
             ->when($this->search, function ($query) {
                 $query->where('title', 'like', '%' . $this->search . '%');
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            });
+
+        // RBAC: Author can only see their own posts, Admin/Editor sees all
+        if (!auth()->user()->hasRole('admin') && !auth()->user()->hasRole('editor')) {
+            $query->where('user_id', auth()->id());
+        }
+
+        $posts = $query->orderBy('created_at', 'desc')->paginate(10);
 
         return view('livewire.admin.posts', ['posts' => $posts])
             ->layout('backend.layout.pages-layout', ['pageTitle' => 'All Posts']);
@@ -30,6 +35,7 @@ class Posts extends Component
     {
         try {
             $post = Post::find($id);
+            $this->authorize('delete', $post);
             if ($post) {
                 // Delete image if exists
                 if ($post->featured_image && \File::exists(public_path('storage/images/posts/' . $post->featured_image))) {

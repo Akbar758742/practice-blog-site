@@ -21,19 +21,23 @@ class EditPost extends Component
     public $content;
     public $featured_image;
     public $old_featured_image;
-    public $is_published = 0;
+    public $status;
+    public $comments_allowed;
     public $selectedTags = [];
 
     public function mount($id)
     {
         $post = Post::findOrFail($id);
+        $this->authorize('update', $post);
+
         $this->postId = $post->id;
         $this->title = $post->title;
         $this->slug = $post->slug;
         $this->category_id = $post->category_id;
         $this->content = $post->content;
         $this->old_featured_image = $post->featured_image;
-        $this->is_published = $post->is_published;
+        $this->status = $post->status->value;
+        $this->comments_allowed = $post->comments_allowed;
         $this->selectedTags = $post->tags->pluck('id')->toArray();
     }
 
@@ -44,6 +48,10 @@ class EditPost extends Component
 
     public function update()
     {
+        $post = Post::find($this->postId);
+        $this->authorize('update', $post);
+
+
         $this->validate([
             'title' => 'required|string|max:255',
             'slug' => 'required|unique:posts,slug,' . $this->postId,
@@ -64,15 +72,20 @@ class EditPost extends Component
             }
         }
 
-        $post = Post::find($this->postId);
+        // Check Publish Permission logic
+        if ($this->status === 'published' && $post->status->value !== 'published') {
+            $this->authorize('publish', $post);
+        }
+
         $post->update([
             'category_id' => $this->category_id,
             'title' => $this->title,
             'slug' => $this->slug,
             'content' => $this->content,
             'featured_image' => $imagePath,
-            'is_published' => $this->is_published,
-            'published_at' => ($this->is_published && !$post->published_at) ? now() : $post->published_at,
+            'status' => $this->status,
+            'published_at' => ($this->status === 'published' && !$post->published_at) ? now() : $post->published_at,
+            'comments_allowed' => $this->comments_allowed,
         ]);
 
         if (!empty($this->selectedTags)) {

@@ -15,7 +15,7 @@ class SearchPosts extends Component
     {
         $posts = [];
         if ($this->q) {
-            $posts = Post::where('is_published', true)
+            $posts = Post::where('status', 'published')
                 ->where(function ($query) {
                     $query->where('title', 'like', '%' . $this->q . '%')
                         ->orWhere('content', 'like', '%' . $this->q . '%');
@@ -23,7 +23,7 @@ class SearchPosts extends Component
                 ->latest('published_at')
                 ->paginate(12);
         } else {
-            $posts = Post::where('is_published', true)->latest('published_at')->paginate(12);
+            $posts = Post::where('status', 'published')->latest('published_at')->paginate(12);
         }
 
         return view('livewire.frontend.search-posts', [

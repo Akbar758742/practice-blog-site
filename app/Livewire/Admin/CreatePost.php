@@ -19,7 +19,8 @@ class CreatePost extends Component
     public $category_id;
     public $content;
     public $featured_image;
-    public $is_published = 0;
+    public $status = 'draft';
+    public $comments_allowed = true;
     public $selectedTags = [];
 
     public function generateSlug()
@@ -29,6 +30,8 @@ class CreatePost extends Component
 
     public function store()
     {
+        $this->authorize('create', Post::class);
+
         $this->validate([
             'title' => 'required|string|max:255',
             'slug' => 'required|unique:posts,slug',
@@ -45,6 +48,14 @@ class CreatePost extends Component
             $imagePath = $imageName;
         }
 
+        if ($this->status === 'published') {
+            if (!auth()->user()->hasRole('admin') && !auth()->user()->hasRole('editor')) {
+                // Determine if we should error or fallback. 
+                // Let's fallback to pending for authors trying to publish.
+                $this->status = 'pending';
+            }
+        }
+
         $post = Post::create([
             'user_id' => auth()->id(),
             'category_id' => $this->category_id,
@@ -52,8 +63,9 @@ class CreatePost extends Component
             'slug' => $this->slug,
             'content' => $this->content,
             'featured_image' => $imagePath,
-            'is_published' => $this->is_published,
-            'published_at' => $this->is_published ? now() : null,
+            'status' => $this->status,
+            'published_at' => $this->status === 'published' ? now() : null,
+            'comments_allowed' => $this->comments_allowed,
         ]);
 
         if (!empty($this->selectedTags)) {

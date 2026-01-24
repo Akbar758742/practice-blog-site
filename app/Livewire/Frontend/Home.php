@@ -9,12 +9,12 @@ class Home extends Component
 {
     public function render()
     {
-        $featuredPost = Post::where('is_published', true)
+        $featuredPost = Post::where('status', 'published')
             ->whereNotNull('featured_image')
             ->latest('published_at')
             ->first();
 
-        $recentPosts = Post::where('is_published', true)
+        $recentPosts = Post::where('status', 'published')
             ->when($featuredPost, function ($query) use ($featuredPost) {
                 return $query->where('id', '!=', $featuredPost->id);
             })

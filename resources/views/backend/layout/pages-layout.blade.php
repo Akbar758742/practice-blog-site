@@ -283,68 +283,86 @@
                             <span class="micon fa fa-home"></span><span class="mtext">home</span>
                         </a>
                     </li>
-                    
+
                     @if(auth()->user()->hasPermission('category.manage'))
-                    <li>
-                        <a href="{{ route('admin.categories') }}"
-                            class="dropdown-toggle no-arrow {{ Route::is('admin.categories') ? 'active' : '' }}">
-                            <span class="micon fa fa-clone"></span><span class="mtext">Categories</span>
-                        </a>
-                    </li>
+                        <li>
+                            <a href="{{ route('admin.categories') }}"
+                                class="dropdown-toggle no-arrow {{ Route::is('admin.categories') ? 'active' : '' }}">
+                                <span class="micon fa fa-clone"></span><span class="mtext">Categories</span>
+                            </a>
+                        </li>
                     @endif
-                    
+
                     @if(auth()->user()->hasPermission('post.create') || auth()->user()->hasPermission('post.edit'))
-                    <li class="dropdown">
-                        <a href="javascript:;" class="dropdown-toggle {{ Route::is('admin.posts.*') ? 'active' : '' }}">
-                            <span class="micon fa fa-newspaper-o"></span><span class="mtext">Posts</span>
-                        </a>
-                        <ul class="submenu">
-                            <li><a href="{{ route('admin.posts.index') }}"
-                                    class="{{ Route::is('admin.posts.index') ? 'active' : '' }}">All Posts</a></li>
-                            @if(auth()->user()->hasPermission('post.create'))
-                            <li><a href="{{ route('admin.posts.create') }}"
-                                    class="{{ Route::is('admin.posts.create') ? 'active' : '' }}">Add New</a></li>
-                            @endif
-                        </ul>
-                    </li>
+                        <li class="dropdown">
+                            <a href="javascript:;" class="dropdown-toggle {{ Route::is('admin.posts.*') ? 'active' : '' }}">
+                                <span class="micon fa fa-newspaper-o"></span><span class="mtext">Posts</span>
+                            </a>
+                            <ul class="submenu">
+                                <li><a href="{{ route('admin.posts.index') }}"
+                                        class="{{ Route::is('admin.posts.index') ? 'active' : '' }}">All Posts</a></li>
+                                @if(auth()->user()->hasPermission('post.create'))
+                                    <li><a href="{{ route('admin.posts.create') }}"
+                                            class="{{ Route::is('admin.posts.create') ? 'active' : '' }}">Add New</a></li>
+                                @endif
+                            </ul>
+                        </li>
                     @endif
-                    
+
                     @if(auth()->user()->hasPermission('tag.manage'))
-                    <li>
-                        <a href="{{ route('admin.tags') }}"
-                            class="dropdown-toggle no-arrow {{ Route::is('admin.tags') ? 'active' : '' }}">
-                            <span class="micon fa fa-tags"></span><span class="mtext">Tags</span>
-                        </a>
-                    </li>
+                        <li>
+                            <a href="{{ route('admin.tags') }}"
+                                class="dropdown-toggle no-arrow {{ Route::is('admin.tags') ? 'active' : '' }}">
+                                <span class="micon fa fa-tags"></span><span class="mtext">Tags</span>
+                            </a>
+                        </li>
                     @endif
-                    
+
+                    @if(auth()->user()->hasPermission('comment.view') || auth()->user()->hasPermission('comment.moderate'))
+                        <li>
+                            <a href="{{ route('admin.comments') }}"
+                                class="dropdown-toggle no-arrow {{ Route::is('admin.comments') ? 'active' : '' }}">
+                                <span class="micon fa fa-comments-o"></span><span class="mtext">Comments</span>
+                            </a>
+                        </li>
+                    @endif
+
+                    @if(auth()->user()->hasRole('admin'))
+                        <li>
+                            <a href="{{ route('admin.pages.index') }}"
+                                class="dropdown-toggle no-arrow {{ Route::is('admin.pages.*') ? 'active' : '' }}">
+                                <span class="micon fa fa-file"></span><span class="mtext">Pages</span>
+                            </a>
+                        </li>
+                    @endif
+
                     <li>
                         <a href="invoice.html" class="dropdown-toggle no-arrow">
                             <span class="micon bi bi-receipt-cutoff"></span><span class="mtext">Invoice</span>
                         </a>
                     </li>
-                    
+
                     @if(auth()->user()->hasPermission('user.manage') || auth()->user()->hasPermission('role.manage'))
-                    <li class="dropdown">
-                        <a href="javascript:;"
-                            class="dropdown-toggle {{ Route::is('admin.users') || Route::is('admin.roles') || Route::is('admin.permissions') ? 'active' : '' }}">
-                            <span class="micon fa fa-users"></span><span class="mtext">User Management</span>
-                        </a>
-                        <ul class="submenu">
-                            @if(auth()->user()->hasPermission('user.manage'))
-                            <li><a href="{{ route('admin.users') }}"
-                                    class="{{ Route::is('admin.users') ? 'active' : '' }}">All Users</a></li>
-                            @endif
-                            @if(auth()->user()->hasPermission('role.manage'))
-                            <li><a href="{{ route('admin.roles') }}"
-                                    class="{{ Route::is('admin.roles') ? 'active' : '' }}">Roles</a></li>
-                            <li><a href="{{ route('admin.permissions') }}"
-                                    class="{{ Route::is('admin.permissions') ? 'active' : '' }}">Permissions</a></li>
-                            @endif
-                        </ul>
-                    </li>
+                        <li class="dropdown">
+                            <a href="javascript:;"
+                                class="dropdown-toggle {{ Route::is('admin.users') || Route::is('admin.roles') || Route::is('admin.permissions') ? 'active' : '' }}">
+                                <span class="micon fa fa-users"></span><span class="mtext">User Management</span>
+                            </a>
+                            <ul class="submenu">
+                                @if(auth()->user()->hasPermission('user.manage'))
+                                    <li><a href="{{ route('admin.users') }}"
+                                            class="{{ Route::is('admin.users') ? 'active' : '' }}">All Users</a></li>
+                                @endif
+                                @if(auth()->user()->hasPermission('role.manage'))
+                                    <li><a href="{{ route('admin.roles') }}"
+                                            class="{{ Route::is('admin.roles') ? 'active' : '' }}">Roles</a></li>
+                                    <li><a href="{{ route('admin.permissions') }}"
+                                            class="{{ Route::is('admin.permissions') ? 'active' : '' }}">Permissions</a></li>
+                                @endif
+                            </ul>
+                        </li>
                     @endif
-                    
+
                     <li>
                         <div class="dropdown-divider"></div>
                     </li>
@@ -359,15 +377,15 @@
                             </span>
                         </a>
                     </li>
-                    
+
                     @if(auth()->user()->hasPermission('settings.manage'))
-                    <li>
-                        <a href="{{ route('admin.settings') }}" class="dropdown-toggle no-arrow">
-                            <span class="micon fa fa-cogs"></span>
-                            <span class="mtext">general
-                            </span>
-                        </a>
-                    </li>
+                        <li>
+                            <a href="{{ route('admin.settings') }}" class="dropdown-toggle no-arrow">
+                                <span class="micon fa fa-cogs"></span>
+                                <span class="mtext">general
+                                </span>
+                            </a>
+                        </li>
                     @endif
                 </ul>
             </div>

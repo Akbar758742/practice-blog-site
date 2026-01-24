@@ -58,6 +58,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::middleware('permission:post.edit')->get('/{id}/edit', \App\Livewire\Admin\EditPost::class)->name('edit');
         });
 
+        // Comments - requires comment permissions
+        Route::middleware('permission:comment.view')->group(function () {
+            Route::get('/comments', \App\Livewire\Admin\Comments::class)->name('comments');
+        });
+
+        // Pages - Admin Only
+        Route::prefix('pages')->name('pages.')->group(function () {
+            Route::get('/', \App\Livewire\Admin\Pages::class)->name('index');
+            Route::get('/create', \App\Livewire\Admin\CreatePage::class)->name('create');
+            Route::get('/{id}/edit', \App\Livewire\Admin\EditPage::class)->name('edit');
+        });
+
         // User Management - requires user.manage permission
         Route::middleware('permission:user.manage')->group(function () {
             Route::get('/users', \App\Livewire\Admin\Users::class)->name('users');

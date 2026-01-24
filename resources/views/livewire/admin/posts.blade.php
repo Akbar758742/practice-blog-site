@@ -37,10 +37,14 @@
                                 <td>{{ Str::limit($post->title, 40) }}</td>
                                 <td>{{ $post->category ? $post->category->name : 'Uncategorized' }}</td>
                                 <td>
-                                    @if($post->is_published)
+                                    @if($post->status === \App\Enums\PostStatus::Published)
                                         <span class="badge badge-success">Published</span>
-                                    @else
+                                    @elseif($post->status === \App\Enums\PostStatus::Draft)
                                         <span class="badge badge-warning">Draft</span>
+                                    @elseif($post->status === \App\Enums\PostStatus::Pending)
+                                        <span class="badge badge-info">Pending</span>
+                                    @else
+                                        <span class="badge badge-secondary">Archived</span>
                                     @endif
                                 </td>
                                 <td>{{ $post->created_at ? $post->created_at->format('d M, Y') : '-' }}</td>

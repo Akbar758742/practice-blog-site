@@ -11,25 +11,27 @@
             <x-form-alerts></x-form-alerts>
 
             <div class="input-group custom mb-1">
-                <input type="text" name="login_id" value="{{ old('login_id') }}" class="form-control form-control-lg" placeholder="Username">
+                <input type="text" name="login_id" id="login_id" value="{{ old('login_id') }}"
+                    class="form-control form-control-lg" placeholder="Username">
                 <div class="input-group-append custom">
                     <span class="input-group-text"><i class="icon-copy dw dw-user1"></i></span>
                 </div>
             </div>
             @error('login_id')
-            <span class="text-danger ml-1" role="alert">
-                {{ $message }}
-            </span>
+                <span class="text-danger ml-1" role="alert">
+                    {{ $message }}
+                </span>
             @enderror
             <div class="input-group custom mb-1 mt-2">
-                <input type="password" name="password" class="form-control form-control-lg" placeholder="**********">
+                <input type="password" name="password" id="password" class="form-control form-control-lg"
+                    placeholder="**********">
                 <div class="input-group-append custom">
                     <span class="input-group-text"><i class="dw dw-padlock1"></i></span>
                 </div>
             </div>
             @error('password')
-            <span class="text-danger ml-1" role="alert">
-               {{ $message }}
+                <span class="text-danger ml-1" role="alert">
+                    {{ $message }}
                 </span>
             @enderror
             <div class="row pb-30">
@@ -49,14 +51,41 @@
                 <div class="col-sm-12">
                     <div class="input-group mb-0">
                         <!--
-               use code for form submit
-               <input class="btn btn-primary btn-lg btn-block" type="submit" value="Sign In">
-              -->
-                        <button class="btn btn-primary btn-lg btn-block" >Sign In</button>
+                   use code for form submit
+                   <input class="btn btn-primary btn-lg btn-block" type="submit" value="Sign In">
+                  -->
+                        <button class="btn btn-primary btn-lg btn-block">Sign In</button>
                     </div>
 
                 </div>
             </div>
         </form>
+
+        <div class="row pb-30">
+            <div class="col-12 text-center">
+                <p class="mb-2 text-muted">Demo Credentials:</p>
+                <div class="btn-group-vertical w-100">
+                    <button type="button" class="btn btn-outline-primary mb-2"
+                        onclick="fillLogin('admin@example.com', '12345')">
+                        Login as Admin
+                    </button>
+                    <button type="button" class="btn btn-outline-info mb-2"
+                        onclick="fillLogin('editor@example.com', '12345')">
+                        Login as Editor
+                    </button>
+                    <button type="button" class="btn btn-outline-success"
+                        onclick="fillLogin('author@example.com', '12345')">
+                        Login as Author
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function fillLogin(email, password) {
+                document.getElementById('login_id').value = email;
+                document.getElementById('password').value = password;
+            }
+        </script>
     </div>
 @endsection

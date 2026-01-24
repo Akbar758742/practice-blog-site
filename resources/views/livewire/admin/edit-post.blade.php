@@ -67,10 +67,20 @@
                         </div>
                     </div>
                     <div class="form-group">
+                        <label>Status</label>
+                        <select class="form-control" wire:model="status">
+                            <option value="draft">Draft</option>
+                            <option value="pending">Pending</option>
+                            <option value="published">Published</option>
+                            <option value="archived">Archived</option>
+                        </select>
+                        @error('status') <span class="text-danger">{{ $message }}</span> @enderror
+                    </div>
+                    <div class="form-group">
                         <div class="custom-control custom-checkbox mb-5">
-                            <input type="checkbox" class="custom-control-input" id="is_published"
-                                wire:model="is_published">
-                            <label class="custom-control-label" for="is_published">Publish</label>
+                            <input type="checkbox" class="custom-control-input" id="comments_allowed"
+                                wire:model="comments_allowed">
+                            <label class="custom-control-label" for="comments_allowed">Allow Comments</label>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">Update Post</button>

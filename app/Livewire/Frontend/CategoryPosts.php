@@ -18,7 +18,7 @@ class CategoryPosts extends Component
     public function render()
     {
         $posts = Post::where('category_id', $this->category->id)
-            ->where('is_published', true)
+            ->where('status', 'published')
             ->latest('published_at')
             ->paginate(12);
 

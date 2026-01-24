@@ -45,14 +45,14 @@ class Dashboard extends Component
         $query = Post::with('user', 'category');
 
         if ($this->activeFilter === 'drafts') {
-            $query->where('is_published', false);
+            $query->where('status', 'draft');
         } elseif ($this->activeFilter === 'scheduled') {
             // Assuming scheduled means published_at > now or specific status
-            $query->where('is_published', true)->where('published_at', '>', now());
+            $query->where('status', 'published')->where('published_at', '>', now());
         } else {
             // Default to latest published or just latest created
             if ($this->activeFilter === 'published') {
-                $query->where('is_published', true)->where('published_at', '<=', now());
+                $query->where('status', 'published')->where('published_at', '<=', now());
             }
         }
 
@@ -66,19 +66,19 @@ class Dashboard extends Component
         $this->totalTags = Tag::count();
         $this->totalUsers = User::count();
 
-        $this->publishedPosts = Post::where('is_published', true)->count();
-        $this->draftPosts = Post::where('is_published', false)->count();
+        $this->publishedPosts = Post::where('status', 'published')->count();
+        $this->draftPosts = Post::where('status', 'draft')->count();
 
         // 1. Time-based Metrics
         $this->postsToday = Post::whereDate('created_at', today())->count();
-        $this->postsThisWeek = Post::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->where('is_published', true)->count();
+        $this->postsThisWeek = Post::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->where('status', 'published')->count();
         $this->newUsersThisWeek = User::whereBetween('created_at', [now()->startOfWeek(), now()->endOfWeek()])->count();
 
         // 2. Content Health
         $this->postsWithoutCategory = Post::whereNull('category_id')->count();
         $this->postsWithoutImage = Post::whereNull('featured_image')->count();
-        $this->oldDrafts = Post::where('is_published', false)->where('updated_at', '<', now()->subDays(30))->count();
-        $this->postsNeedingUpdate = Post::where('is_published', true)->where('updated_at', '<', now()->subMonths(6))->count();
+        $this->oldDrafts = Post::where('status', 'draft')->where('updated_at', '<', now()->subDays(30))->count();
+        $this->postsNeedingUpdate = Post::where('status', 'published')->where('updated_at', '<', now()->subMonths(6))->count();
 
         // 3. Initial Recent Posts
         $this->loadRecentPosts();

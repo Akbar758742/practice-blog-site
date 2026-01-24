@@ -16,15 +16,17 @@ class Post extends Model
         'slug',
         'content',
         'featured_image',
-        'is_published',
+        'status',
         'published_at',
         'meta_title',
         'meta_desc',
+        'comments_allowed',
     ];
 
     protected $casts = [
-        'is_published' => 'boolean',
+        'status' => \App\Enums\PostStatus::class,
         'published_at' => 'datetime',
+        'comments_allowed' => 'boolean',
     ];
 
     public function user()
@@ -40,5 +42,10 @@ class Post extends Model
     public function tags()
     {
         return $this->belongsToMany(Tag::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 }

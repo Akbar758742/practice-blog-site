@@ -11,7 +11,7 @@ class SinglePost extends Component
 
     public function mount($slug)
     {
-        $this->post = Post::where('slug', $slug)->where('is_published', true)->firstOrFail();
+        $this->post = Post::where('slug', $slug)->where('status', 'published')->firstOrFail();
         $this->post->increment('views');
     }
 
