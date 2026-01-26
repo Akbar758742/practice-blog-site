@@ -13,7 +13,13 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
             'preventBackHistory' => App\Http\Middleware\PreventBackHistory::class,
-            'permission' => \App\Http\Middleware\PermissionMiddleware::class
+            'permission' => \App\Http\Middleware\PermissionMiddleware::class,
+            'loadPermissions' => \App\Http\Middleware\LoadUserPermissions::class,
+        ]);
+
+        // Append permission loading to web middleware group for authenticated routes
+        $middleware->appendToGroup('web', [
+            \App\Http\Middleware\LoadUserPermissions::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

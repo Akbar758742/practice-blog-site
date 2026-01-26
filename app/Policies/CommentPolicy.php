@@ -28,26 +28,23 @@ class CommentPolicy
      */
     public function create(User $user): bool
     {
-        // Usually authenticated users can comment, but moderation might be needed.
-        // Assuming all auth users can comment on allowed posts.
+        // Authenticated users can comment on allowed posts.
         return true;
     }
 
     /**
-     * Determine whether the user can update the model (Edit own comment? or Moderate?)
-     * Steps say: Approve / Reject (Moderate).
+     * Determine whether the user can update/moderate the model.
+     * Only moderators (admin/editor) can change comment status.
      */
     public function update(User $user, Comment $comment): bool
     {
-        // Edit own comment?
-        if ($user->id === $comment->user_id)
-            return true;
-
-        // Moderate? use specific permission or 'moderate' method?
-        // Using 'update' for moderation might be confusing if we want to allow editing text vs changing status.
+        // Only moderators can update comments (change status, etc.)
         return $user->hasPermission('comment.moderate') || $user->hasRole('admin') || $user->hasRole('editor');
     }
 
+    /**
+     * Determine whether the user can moderate comments (approve/reject/spam).
+     */
     public function moderate(User $user, Comment $comment): bool
     {
         return $user->hasPermission('comment.moderate') || $user->hasRole('admin') || $user->hasRole('editor');
@@ -58,6 +55,23 @@ class CommentPolicy
      */
     public function delete(User $user, Comment $comment): bool
     {
+        // Admin can delete any, users can delete their own
         return $user->hasPermission('comment.delete') || $user->hasRole('admin') || ($user->id === $comment->user_id);
+    }
+
+    /**
+     * Determine whether the user can restore the model (soft delete).
+     */
+    public function restore(User $user, Comment $comment): bool
+    {
+        return $user->hasRole('admin');
+    }
+
+    /**
+     * Determine whether the user can permanently delete the model.
+     */
+    public function forceDelete(User $user, Comment $comment): bool
+    {
+        return $user->hasRole('admin');
     }
 }

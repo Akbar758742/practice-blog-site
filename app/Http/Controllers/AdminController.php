@@ -34,6 +34,11 @@ class AdminController extends Controller
 
     public function profilePicUpdate(Request $request)
     {
+        // Validate file upload
+        $request->validate([
+            'profilePicturefile' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
+        ]);
+
         $user = User::findOrFail(auth()->user()->id);
         $path = 'images/users/';
         $file = $request->file('profilePicturefile');

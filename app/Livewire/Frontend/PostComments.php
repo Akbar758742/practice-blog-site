@@ -72,13 +72,7 @@ class PostComments extends Component
     {
         $comments = $this->post->comments()
             ->whereNull('parent_id') // Top level only
-            ->where(function ($query) {
-                $query->where('status', 'approved')
-                    ->orWhere('user_id', Auth::id()); // Show own pending comments? Maybe confusing if not distinct.
-            })
-            ->where('status', 'approved') // Let's stick to approved only for simplicity or maybe show own pending? 
-            // The prompt implies moderation flow, so showing pending only to author is good UI but requires checking status in view.
-            // Let's just show approved for now as per previous logic.
+            ->where('status', 'approved') // Only show approved comments
             ->orderBy('created_at', 'desc')
             ->with([
                 'user',

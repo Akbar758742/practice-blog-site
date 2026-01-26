@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->text('content');
             $table->string('status')->default('pending'); // pending, approved, spam
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -21,11 +21,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::controller(AuthController::class)->group(function () {
             Route::get('/login', 'loginForm')->name('login');
             Route::get('/forget-password', 'forgetPassword')->name('forgetPassword');
-            Route::post('/login', 'loginHandler')->name('loginHandler');
-            Route::post('/send-password-reset-link', 'sendPasswordResetLink')->name('sendPasswordResetLink');
+            Route::post('/login', 'loginHandler')->middleware('throttle:5,1')->name('loginHandler'); // Rate limit: 5 attempts per minute
+            Route::post('/send-password-reset-link', 'sendPasswordResetLink')->middleware('throttle:3,1')->name('sendPasswordResetLink'); // Rate limit: 3 per minute
             Route::get('/reset-password/{token}', 'resetPasswordForm')->name('resetPasswordForm');
 
-            Route::post('/reset-password', 'resetPasswordHandler')->name('resetPasswordHandler');
+            Route::post('/reset-password', 'resetPasswordHandler')->middleware('throttle:5,1')->name('resetPasswordHandler');
             // Route::get('/register', 'register')->name('register');
             // Route::post('/register', 'postRegister')->name('postRegister');
 
@@ -63,8 +63,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/comments', \App\Livewire\Admin\Comments::class)->name('comments');
         });
 
-        // Pages - Admin Only
-        Route::prefix('pages')->name('pages.')->group(function () {
+        // Pages - Admin Only (requires admin role)
+        Route::prefix('pages')->name('pages.')->middleware('permission:page.manage')->group(function () {
             Route::get('/', \App\Livewire\Admin\Pages::class)->name('index');
             Route::get('/create', \App\Livewire\Admin\CreatePage::class)->name('create');
             Route::get('/{id}/edit', \App\Livewire\Admin\EditPage::class)->name('edit');

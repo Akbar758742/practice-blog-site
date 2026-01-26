@@ -17,11 +17,21 @@ class Users extends Component
     public $isOpen = false;
     public $search = '';
 
+    // For delete confirmation
+    public $confirmingUserDeletion = false;
+    public $userToDelete = null;
+    public $userToDeleteName = '';
+    public $userToDeletePostCount = 0;
+    public $userToDeleteCommentCount = 0;
+
     public function render()
     {
         $users = User::with('roles')
-            ->where('name', 'like', '%' . $this->search . '%')
-            ->orWhere('email', 'like', '%' . $this->search . '%')
+            ->withCount(['posts', 'comments'])
+            ->where(function ($query) {
+                $query->where('name', 'like', '%' . $this->search . '%')
+                    ->orWhere('email', 'like', '%' . $this->search . '%');
+            })
             ->paginate(10);
 
         return view('livewire.admin.users', [
@@ -119,10 +129,57 @@ class Users extends Component
     public function delete($id)
     {
         try {
-            User::findOrFail($id)->delete();
-            $this->successAlert('Deleted', 'User deleted successfully!');
+            $user = User::findOrFail($id);
+
+            // Prevent self-deletion
+            if ($user->id === auth()->id()) {
+                $this->errorAlert('Error', 'You cannot delete your own account!');
+                return;
+            }
+
+            // Check for associated content
+            $postCount = $user->posts()->count();
+            $commentCount = $user->comments()->count();
+
+            // Always show confirmation modal
+            $this->userToDelete = $id;
+            $this->userToDeleteName = $user->name;
+            $this->userToDeletePostCount = $postCount;
+            $this->userToDeleteCommentCount = $commentCount;
+            $this->confirmingUserDeletion = true;
         } catch (\Exception $e) {
             $this->errorAlert('Error', 'Something went wrong while deleting the user.');
         }
+    }
+
+    public function confirmDelete()
+    {
+        try {
+            $user = User::findOrFail($this->userToDelete);
+
+            // Prevent self-deletion
+            if ($user->id === auth()->id()) {
+                $this->errorAlert('Error', 'You cannot delete your own account!');
+                $this->cancelDelete();
+                return;
+            }
+
+            $user->delete();
+            $this->cancelDelete();
+            $this->resetPage();
+            $this->successAlert('Deleted', 'User and all associated content deleted successfully!');
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong while deleting the user.');
+            $this->cancelDelete();
+        }
+    }
+
+    public function cancelDelete()
+    {
+        $this->confirmingUserDeletion = false;
+        $this->userToDelete = null;
+        $this->userToDeleteName = '';
+        $this->userToDeletePostCount = 0;
+        $this->userToDeleteCommentCount = 0;
     }
 }

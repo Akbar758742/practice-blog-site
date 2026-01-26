@@ -143,4 +143,58 @@
             </div>
         </div>
     </div>
+
+    <!-- Delete Confirmation Modal -->
+    @if($confirmingUserDeletion)
+    <div class="modal show d-block" style="background-color: rgba(0,0,0,0.5); z-index: 9999;" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="false">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteModalLabel">
+                        <i class="fa fa-exclamation-triangle"></i> Confirm User Deletion
+                    </h5>
+                    <button type="button" class="close text-white" wire:click="cancelDelete" style="cursor: pointer;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning mb-3" role="alert">
+                        <strong>⚠️ Warning!</strong> You are about to permanently delete the user account: <strong>{{ $userToDeleteName }}</strong>
+                    </div>
+                    
+                    @if($userToDeletePostCount > 0 || $userToDeleteCommentCount > 0)
+                    <p class="mb-2">This user has the following associated content that will also be <strong class="text-danger">permanently deleted</strong>:</p>
+                    <ul class="list-group list-group-flush mb-3">
+                        @if($userToDeletePostCount > 0)
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Posts</span>
+                            <span class="badge badge-danger badge-pill">{{ $userToDeletePostCount }}</span>
+                        </li>
+                        @endif
+                        @if($userToDeleteCommentCount > 0)
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span>Comments</span>
+                            <span class="badge badge-danger badge-pill">{{ $userToDeleteCommentCount }}</span>
+                        </li>
+                        @endif
+                    </ul>
+                    @endif
+                    
+                    <div class="alert alert-danger mt-3 mb-0">
+                        <strong class="d-block mb-2">⛔ This action CANNOT be undone!</strong>
+                        <small>All user data, posts, and comments will be permanently deleted from the system.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" wire:click="cancelDelete">
+                        <i class="fa fa-times"></i> Cancel
+                    </button>
+                    <button type="button" class="btn btn-danger" wire:click="confirmDelete">
+                        <i class="fa fa-trash"></i> Yes, Delete User & Content
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>
