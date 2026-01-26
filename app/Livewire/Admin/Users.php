@@ -5,13 +5,14 @@ namespace App\Livewire\Admin;
 use App\Models\User;
 use App\Models\Role;
 use App\Traits\AlertTrait;
+use App\Traits\ActivityLogTrait;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class Users extends Component
 {
-    use WithPagination, AlertTrait;
+    use WithPagination, AlertTrait, ActivityLogTrait;
 
     public $name, $email, $password, $user_id, $role_id;
     public $isOpen = false;
@@ -79,6 +80,9 @@ class Users extends Component
                 $user->roles()->attach((int) $this->role_id);
             }
 
+            // Log user creation
+            $this->logCreated('user', $user, $user->name);
+
             $this->resetInputFields();
             $this->dispatch('close-modal');
             $this->successAlert('Success', 'User created successfully!');
@@ -107,6 +111,13 @@ class Users extends Component
 
         try {
             $user = User::findOrFail($this->user_id);
+
+            // Store old values for logging
+            $oldValues = [
+                'name' => $user->name,
+                'email' => $user->email,
+            ];
+
             $user->update([
                 'name' => $this->name,
                 'email' => $this->email,
@@ -117,6 +128,9 @@ class Users extends Component
             }
 
             $user->roles()->sync([$this->role_id]);
+
+            // Log user update
+            $this->logUpdated('user', $user, $oldValues, $user->name);
 
             $this->resetInputFields();
             $this->dispatch('close-modal');
@@ -163,6 +177,13 @@ class Users extends Component
                 $this->cancelDelete();
                 return;
             }
+
+            // Log user deletion with extra info
+            $this->logDeleted('user', $user, $user->name, [
+                'post_count' => $user->posts()->count(),
+                'comment_count' => $user->comments()->count(),
+                'roles' => $user->roles->pluck('name')->toArray(),
+            ]);
 
             $user->delete();
             $this->cancelDelete();

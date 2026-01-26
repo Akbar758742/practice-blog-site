@@ -5,11 +5,12 @@ namespace App\Livewire\Admin;
 use App\Models\Role;
 use App\Models\Permission;
 use App\Traits\AlertTrait;
+use App\Traits\ActivityLogTrait;
 use Livewire\Component;
 
 class Roles extends Component
 {
-    use AlertTrait;
+    use AlertTrait, ActivityLogTrait;
 
     public $roles;
     public $name, $slug, $role_id;
@@ -58,6 +59,9 @@ class Roles extends Component
 
             $role->permissions()->sync($this->selectedPermissions);
 
+            // Log role creation
+            $this->logCreated('role', $role, $role->name);
+
             $this->mount();
             $this->dispatch('close-modal');
             $this->resetFields();
@@ -86,12 +90,23 @@ class Roles extends Component
 
         try {
             $role = Role::findOrFail($this->role_id);
+
+            // Store old values for logging
+            $oldValues = [
+                'name' => $role->name,
+                'slug' => $role->slug,
+                'permissions' => $role->permissions->pluck('name')->toArray(),
+            ];
+
             $role->update([
                 'name' => $this->name,
                 'slug' => $this->slug,
             ]);
 
             $role->permissions()->sync($this->selectedPermissions);
+
+            // Log role update
+            $this->logUpdated('role', $role, $oldValues, $role->name);
 
             $this->mount();
             $this->dispatch('close-modal');
@@ -128,6 +143,10 @@ class Roles extends Component
             }
 
             $role = Role::findOrFail($this->deleteId);
+            $this->logDeleted('role', $role, $role->name, [
+                'user_count' => $role->users()->count(),
+                'permissions' => $role->permissions->pluck('name')->toArray(),
+            ]);
             $role->delete(); // Use soft delete
             $this->deleteId = null;
             $this->mount();

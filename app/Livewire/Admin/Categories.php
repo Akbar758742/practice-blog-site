@@ -5,11 +5,12 @@ namespace App\Livewire\Admin;
 use Livewire\Component;
 use App\Models\Category;
 use App\Traits\AlertTrait;
+use App\Traits\ActivityLogTrait;
 use Illuminate\Support\Str;
 
 class Categories extends Component
 {
-    use AlertTrait;
+    use AlertTrait, ActivityLogTrait;
 
     public $categories;
     public $name;
@@ -55,6 +56,12 @@ class Categories extends Component
                 'parent_id' => $this->parent_id ?: null,
             ]);
 
+            // Log category creation
+            $category = Category::where('slug', $this->slug)->first();
+            if ($category) {
+                $this->logCreated('category', $category, $category->name);
+            }
+
             $this->successAlert('Success', 'Category created successfully!');
             $this->resetInputFields();
         } catch (\Exception $e) {
@@ -81,11 +88,22 @@ class Categories extends Component
 
         try {
             $category = Category::find($this->categoryId);
+
+            // Store old values for logging
+            $oldValues = [
+                'name' => $category->name,
+                'slug' => $category->slug,
+                'parent_id' => $category->parent_id,
+            ];
+
             $category->update([
                 'name' => $this->name,
                 'slug' => $this->slug,
                 'parent_id' => $this->parent_id ?: null,
             ]);
+
+            // Log category update
+            $this->logUpdated('category', $category, $oldValues, $category->name);
 
             $this->successAlert('Success', 'Category updated successfully!');
             $this->resetInputFields();
@@ -122,6 +140,7 @@ class Categories extends Component
             }
 
             $category = Category::findOrFail($this->deleteId);
+            $this->logDeleted('category', $category, $category->name);
             $category->delete(); // Use soft delete
             $this->deleteId = null;
             $this->successAlert('Deleted', 'Category deleted successfully!');

@@ -5,11 +5,12 @@ namespace App\Livewire\Admin;
 use Livewire\Component;
 use App\Models\Page;
 use App\Traits\AlertTrait;
+use App\Traits\ActivityLogTrait;
 use Illuminate\Support\Str;
 
 class EditPage extends Component
 {
-    use AlertTrait;
+    use AlertTrait, ActivityLogTrait;
 
     public $page_id;
     public $title;
@@ -50,6 +51,14 @@ class EditPage extends Component
         ]);
 
         $page = Page::findOrFail($this->page_id);
+
+        // Store old values for logging
+        $oldValues = [
+            'title' => $page->title,
+            'slug' => $page->slug,
+            'is_visible' => $page->is_visible,
+        ];
+
         $page->update([
             'title' => $this->title,
             'slug' => $this->slug,
@@ -58,6 +67,9 @@ class EditPage extends Component
             'meta_title' => $this->meta_title,
             'meta_desc' => $this->meta_desc,
         ]);
+
+        // Log page update
+        $this->logUpdated('page', $page, $oldValues, $page->title);
 
         $this->successAlert('Success', 'Page updated successfully!');
         return redirect()->route('admin.pages.index');

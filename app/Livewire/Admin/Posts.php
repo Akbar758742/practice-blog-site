@@ -6,10 +6,11 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Post;
 use App\Traits\AlertTrait;
+use App\Traits\ActivityLogTrait;
 
 class Posts extends Component
 {
-    use WithPagination, AlertTrait;
+    use WithPagination, AlertTrait, ActivityLogTrait;
 
     public $search;
     public $deleteId = null;
@@ -55,6 +56,7 @@ class Posts extends Component
         try {
             $post = Post::onlyTrashed()->findOrFail($id);
             $post->restore();
+            $this->logRestored('post', $post, $post->title);
             $this->successAlert('Restored', 'Post restored successfully!');
         } catch (\Exception $e) {
             $this->errorAlert('Error', 'Could not restore post.');
@@ -83,12 +85,14 @@ class Posts extends Component
             if (!$this->deleteId) return;
 
             $post = Post::onlyTrashed()->findOrFail($this->deleteId);
+            $postTitle = $post->title;
 
             // Delete image if exists
             if ($post->featured_image && \File::exists(public_path('storage/images/posts/' . $post->featured_image))) {
                 \File::delete(public_path('storage/images/posts/' . $post->featured_image));
             }
 
+            $this->logForceDeleted('post', $post, $postTitle);
             $post->forceDelete();
             $this->deleteId = null;
             $this->successAlert('Deleted', 'Post permanently deleted!');
@@ -132,6 +136,7 @@ class Posts extends Component
                 \File::delete(public_path('storage/images/posts/' . $post->featured_image));
             }
 
+            $this->logDeleted('post', $post, $post->title);
             $post->delete(); // Use soft delete, not forceDelete
             $this->deleteId = null;
             $this->successAlert('Deleted', 'Post deleted successfully!');

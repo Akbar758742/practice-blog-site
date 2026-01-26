@@ -6,10 +6,11 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Page;
 use App\Traits\AlertTrait;
+use App\Traits\ActivityLogTrait;
 
 class Pages extends Component
 {
-    use WithPagination, AlertTrait;
+    use WithPagination, AlertTrait, ActivityLogTrait;
 
     public $search;
     public $deleteId = null;
@@ -50,6 +51,7 @@ class Pages extends Component
             }
             $page = Page::onlyTrashed()->findOrFail($id);
             $page->restore();
+            $this->logRestored('page', $page, $page->title);
             $this->successAlert('Restored', 'Page restored successfully!');
         } catch (\Exception $e) {
             $this->errorAlert('Error', 'Could not restore page.');
@@ -82,6 +84,7 @@ class Pages extends Component
             if (!$this->deleteId) return;
 
             $page = Page::onlyTrashed()->findOrFail($this->deleteId);
+            $this->logForceDeleted('page', $page, $page->title);
             $page->forceDelete();
             $this->deleteId = null;
             $this->successAlert('Deleted', 'Page permanently deleted!');
@@ -128,6 +131,7 @@ class Pages extends Component
             }
 
             $page = Page::findOrFail($this->deleteId);
+            $this->logDeleted('page', $page, $page->title);
             $page->delete(); // Use soft delete
             $this->deleteId = null;
             $this->successAlert('Deleted', 'Page deleted successfully.');

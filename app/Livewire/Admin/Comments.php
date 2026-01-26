@@ -6,10 +6,11 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\Comment;
 use App\Traits\AlertTrait;
+use App\Traits\ActivityLogTrait;
 
 class Comments extends Component
 {
-    use WithPagination, AlertTrait;
+    use WithPagination, AlertTrait, ActivityLogTrait;
 
     public $search;
     public $filterStatus = '';
@@ -56,6 +57,7 @@ class Comments extends Component
         try {
             $comment = Comment::onlyTrashed()->findOrFail($id);
             $comment->restore();
+            $this->logRestored('comment', $comment, 'Comment #' . $comment->id);
             $this->successAlert('Restored', 'Comment restored successfully!');
         } catch (\Exception $e) {
             $this->errorAlert('Error', 'Could not restore comment.');
@@ -84,6 +86,7 @@ class Comments extends Component
             if (!$this->deleteId) return;
 
             $comment = Comment::onlyTrashed()->findOrFail($this->deleteId);
+            $this->logForceDeleted('comment', $comment, 'Comment #' . $comment->id);
             $comment->forceDelete();
             $this->deleteId = null;
             $this->successAlert('Deleted', 'Comment permanently deleted!');
@@ -98,7 +101,9 @@ class Comments extends Component
         $comment = Comment::findOrFail($id);
         $this->authorize('moderate', $comment); // or update
 
+        $oldStatus = $comment->status;
         $comment->update(['status' => 'approved']);
+        $this->logStatusChanged('comment', $comment, 'status', $oldStatus, 'approved', 'Comment #' . $comment->id);
         $this->successAlert('Approved', 'Comment approved successfully.');
     }
 
@@ -107,7 +112,9 @@ class Comments extends Component
         $comment = Comment::findOrFail($id);
         $this->authorize('moderate', $comment);
 
+        $oldStatus = $comment->status;
         $comment->update(['status' => 'spam']);
+        $this->logStatusChanged('comment', $comment, 'status', $oldStatus, 'spam', 'Comment #' . $comment->id);
         $this->successAlert('Spam', 'Comment marked as spam.');
     }
 
@@ -138,6 +145,7 @@ class Comments extends Component
             }
 
             $comment = Comment::findOrFail($this->deleteId);
+            $this->logDeleted('comment', $comment, 'Comment #' . $comment->id);
             $comment->delete(); // Use soft delete
             $this->deleteId = null;
             $this->successAlert('Deleted', 'Comment deleted successfully.');

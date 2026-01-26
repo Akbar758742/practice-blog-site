@@ -8,11 +8,12 @@ use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Traits\AlertTrait;
+use App\Traits\ActivityLogTrait;
 use Illuminate\Support\Str;
 
 class EditPost extends Component
 {
-    use WithFileUploads, AlertTrait;
+    use WithFileUploads, AlertTrait, ActivityLogTrait;
 
     public $postId;
     public $title;
@@ -50,6 +51,15 @@ class EditPost extends Component
     {
         $post = Post::find($this->postId);
         $this->authorize('update', $post);
+
+        // Store old values for logging
+        $oldValues = [
+            'title' => $post->title,
+            'slug' => $post->slug,
+            'category_id' => $post->category_id,
+            'status' => $post->status->value ?? $post->status,
+            'content' => $post->content,
+        ];
 
 
         $this->validate([
@@ -93,6 +103,9 @@ class EditPost extends Component
         } else {
             $post->tags()->detach();
         }
+
+        // Log post update with changes
+        $this->logUpdated('post', $post, $oldValues, $post->title);
 
         $this->successAlert('Success', 'Post updated successfully!');
         return redirect()->route('admin.posts.index');

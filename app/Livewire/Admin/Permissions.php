@@ -4,11 +4,12 @@ namespace App\Livewire\Admin;
 
 use App\Models\Permission;
 use App\Traits\AlertTrait;
+use App\Traits\ActivityLogTrait;
 use Livewire\Component;
 
 class Permissions extends Component
 {
-    use AlertTrait;
+    use AlertTrait, ActivityLogTrait;
 
     public $permissions;
     public $name, $slug, $group_name, $permission_id;
@@ -54,6 +55,12 @@ class Permissions extends Component
                 'group_name' => $this->group_name,
             ]);
 
+            // Log permission creation
+            $permission = Permission::where('slug', $this->slug)->first();
+            if ($permission) {
+                $this->logCreated('permission', $permission, $permission->name);
+            }
+
             $this->mount(); // Refresh list
             $this->dispatch('close-modal');
             $this->resetFields();
@@ -83,11 +90,22 @@ class Permissions extends Component
 
         try {
             $permission = Permission::findOrFail($this->permission_id);
+
+            // Store old values for logging
+            $oldValues = [
+                'name' => $permission->name,
+                'slug' => $permission->slug,
+                'group_name' => $permission->group_name,
+            ];
+
             $permission->update([
                 'name' => $this->name,
                 'slug' => $this->slug,
                 'group_name' => $this->group_name,
             ]);
+
+            // Log permission update
+            $this->logUpdated('permission', $permission, $oldValues, $permission->name);
 
             $this->mount();
             $this->dispatch('close-modal');
@@ -124,6 +142,9 @@ class Permissions extends Component
             }
 
             $permission = Permission::findOrFail($this->deleteId);
+            $this->logDeleted('permission', $permission, $permission->name, [
+                'roles' => $permission->roles->pluck('name')->toArray(),
+            ]);
             $permission->delete(); // Use soft delete
             $this->deleteId = null;
             $this->mount();

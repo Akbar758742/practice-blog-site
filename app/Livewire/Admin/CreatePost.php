@@ -8,11 +8,12 @@ use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Traits\AlertTrait;
+use App\Traits\ActivityLogTrait;
 use Illuminate\Support\Str;
 
 class CreatePost extends Component
 {
-    use WithFileUploads, AlertTrait;
+    use WithFileUploads, AlertTrait, ActivityLogTrait;
 
     public $title;
     public $slug;
@@ -50,7 +51,7 @@ class CreatePost extends Component
 
         if ($this->status === 'published') {
             if (!auth()->user()->hasRole('admin') && !auth()->user()->hasRole('editor')) {
-                // Determine if we should error or fallback. 
+                // Determine if we should error or fallback.
                 // Let's fallback to pending for authors trying to publish.
                 $this->status = 'pending';
             }
@@ -71,6 +72,9 @@ class CreatePost extends Component
         if (!empty($this->selectedTags)) {
             $post->tags()->sync($this->selectedTags);
         }
+
+        // Log post creation
+        $this->logCreated('post', $post, $post->title);
 
         $this->successAlert('Success', 'Post created successfully!');
         return redirect()->route('admin.posts.index');

@@ -81,6 +81,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('/permissions', \App\Livewire\Admin\Permissions::class)->name('permissions');
         });
 
+        // Activity Log - Admin Only (for security audit)
+        // Authorization check is done in the component itself
+        Route::get('/activity-log', \App\Livewire\Admin\ActivityLog::class)->name('activity-log');
+
         // Settings - requires settings.manage permission
         Route::middleware('permission:settings.manage')->group(function () {
             Route::controller(AdminController::class)->group(function () {

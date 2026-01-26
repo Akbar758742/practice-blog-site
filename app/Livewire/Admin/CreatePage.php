@@ -5,11 +5,12 @@ namespace App\Livewire\Admin;
 use Livewire\Component;
 use App\Models\Page;
 use App\Traits\AlertTrait;
+use App\Traits\ActivityLogTrait;
 use Illuminate\Support\Str;
 
 class CreatePage extends Component
 {
-    use AlertTrait;
+    use AlertTrait, ActivityLogTrait;
 
     public $title;
     public $slug;
@@ -25,7 +26,7 @@ class CreatePage extends Component
 
     public function store()
     {
-        // Simple permission check or use Policy if needed. 
+        // Simple permission check or use Policy if needed.
         // Assuming only Admins can manage pages for now as per "Role-based editing" requirement on Step 4.
         if (!auth()->user()->hasRole('admin')) {
             $this->errorAlert('Error', 'Unauthorized.');
@@ -46,6 +47,12 @@ class CreatePage extends Component
             'meta_title' => $this->meta_title,
             'meta_desc' => $this->meta_desc,
         ]);
+
+        // Log page creation
+        $page = Page::where('slug', $this->slug)->first();
+        if ($page) {
+            $this->logCreated('page', $page, $page->title);
+        }
 
         $this->successAlert('Success', 'Page created successfully!');
         return redirect()->route('admin.pages.index');

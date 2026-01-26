@@ -5,11 +5,12 @@ namespace App\Livewire\Admin;
 use Livewire\Component;
 use App\Models\Tag;
 use App\Traits\AlertTrait;
+use App\Traits\ActivityLogTrait;
 use Illuminate\Support\Str;
 
 class Tags extends Component
 {
-    use AlertTrait;
+    use AlertTrait, ActivityLogTrait;
 
     public $tags;
     public $name;
@@ -50,6 +51,12 @@ class Tags extends Component
                 'slug' => $this->slug,
             ]);
 
+            // Log tag creation
+            $tag = Tag::where('slug', $this->slug)->first();
+            if ($tag) {
+                $this->logCreated('tag', $tag, $tag->name);
+            }
+
             $this->successAlert('Success', 'Tag created successfully!');
             $this->resetInputFields();
         } catch (\Exception $e) {
@@ -75,10 +82,20 @@ class Tags extends Component
 
         try {
             $tag = Tag::find($this->tagId);
+
+            // Store old values for logging
+            $oldValues = [
+                'name' => $tag->name,
+                'slug' => $tag->slug,
+            ];
+
             $tag->update([
                 'name' => $this->name,
                 'slug' => $this->slug,
             ]);
+
+            // Log tag update
+            $this->logUpdated('tag', $tag, $oldValues, $tag->name);
 
             $this->successAlert('Success', 'Tag updated successfully!');
             $this->resetInputFields();
@@ -115,6 +132,7 @@ class Tags extends Component
             }
 
             $tag = Tag::findOrFail($this->deleteId);
+            $this->logDeleted('tag', $tag, $tag->name);
             $tag->delete(); // Use soft delete
             $this->deleteId = null;
             $this->successAlert('Deleted', 'Tag deleted successfully!');

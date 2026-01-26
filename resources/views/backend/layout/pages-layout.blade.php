@@ -363,6 +363,15 @@
                         </li>
                     @endif
 
+                    @if(auth()->user()->hasRole('admin'))
+                        <li>
+                            <a href="{{ route('admin.activity-log') }}"
+                                class="dropdown-toggle no-arrow {{ Route::is('admin.activity-log') ? 'active' : '' }}">
+                                <span class="micon fa fa-history"></span><span class="mtext">Activity Log</span>
+                            </a>
+                        </li>
+                    @endif
+
                     <li>
                         <div class="dropdown-divider"></div>
                     </li>
