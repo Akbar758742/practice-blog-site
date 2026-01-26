@@ -83,6 +83,22 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class, 'role_user');
     }
 
+    /**
+     * Get all posts by this user
+     */
+    public function posts()
+    {
+        return $this->hasMany(\App\Models\Post::class);
+    }
+
+    /**
+     * Get all comments by this user
+     */
+    public function comments()
+    {
+        return $this->hasMany(\App\Models\Comment::class);
+    }
+
     public function hasRole($role)
     {
         return $this->roles()->where('slug', $role)->exists();
@@ -94,5 +110,21 @@ class User extends Authenticatable
             ->whereHas('permissions', function ($q) use ($permission) {
                 $q->where('slug', $permission);
             })->exists();
+    }
+
+    /**
+     * Check permission using cached roles (more efficient)
+     */
+    public function hasPermissionCached($permission)
+    {
+        if (!$this->relationLoaded('roles')) {
+            $this->load('roles.permissions');
+        }
+
+        return $this->roles
+            ->pluck('permissions')
+            ->flatten()
+            ->pluck('slug')
+            ->contains($permission);
     }
 }
