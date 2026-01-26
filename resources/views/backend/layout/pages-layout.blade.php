@@ -7,9 +7,9 @@
     <title>@yield('pageTitle', isset($pageTitle) ? $pageTitle : 'Blog Admin')</title>
 
     <!-- Site favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('backend') }}/vendors/images/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('backend') }}/vendors/images/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('backend') }}/vendors/images/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ \App\Helpers\Settings::favicon() }}" />
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ \App\Helpers\Settings::favicon() }}" />
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ \App\Helpers\Settings::favicon() }}" />
 
     <!-- Mobile Specific Metas -->
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
@@ -267,8 +267,8 @@
     <div class="left-side-bar">
         <div class="brand-logo">
             <a href="index.html">
-                <img src="{{ asset('backend') }}/vendors/images/deskapp-logo.svg" alt="" class="dark-logo" />
-                <img src="{{ asset('backend') }}/vendors/images/deskapp-logo-white.svg" alt="" class="light-logo" />
+                <img src="{{ \App\Helpers\Settings::logo() }}" alt="{{ \App\Helpers\Settings::siteName() }}" class="dark-logo" style="max-height:45px;" />
+                <img src="{{ \App\Helpers\Settings::logoWhite() }}" alt="{{ \App\Helpers\Settings::siteName() }}" class="light-logo" style="max-height:45px;" />
             </a>
             <div class="close-sidebar" data-toggle="left-sidebar-close">
                 <i class="ion-close-round"></i>

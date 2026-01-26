@@ -14,7 +14,13 @@
 
     <header class="bg-white shadow-sm sticky top-0 z-50" x-data="{ searchOpen: false }">
         <nav class="container mx-auto px-4 py-4 flex justify-between items-center bg-white relative z-20">
-            <a href="/" class="text-2xl font-bold text-indigo-600">BlogBrand</a>
+            @if(\App\Helpers\Settings::get('site_logo'))
+                <a href="/" class="flex items-center">
+                    <img src="{{ \App\Helpers\Settings::logo() }}" alt="{{ \App\Helpers\Settings::siteName() }}" class="h-10 max-w-[150px] object-contain">
+                </a>
+            @else
+                <a href="/" class="text-2xl font-bold text-indigo-600">{{ \App\Helpers\Settings::siteName() }}</a>
+            @endif
 
             <div class="hidden md:flex space-x-6 items-center">
                 <a href="/" class="text-gray-600 hover:text-indigo-600 font-medium">Home</a>
@@ -79,7 +85,7 @@
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
                 <div>
-                    <h3 class="text-xl font-bold mb-4">BlogBrand</h3>
+                    <h3 class="text-xl font-bold mb-4">{{ \App\Helpers\Settings::siteName() }}</h3>
                     <p class="text-gray-400">A place for interesting thoughts and ideas.</p>
                 </div>
                 <div>
@@ -109,7 +115,7 @@
                 </div>
             </div>
             <div class="mt-8 pt-8 border-t border-gray-800 text-center text-gray-500">
-                &copy; {{ date('Y') }} BlogBrand. All rights reserved.
+                &copy; {{ date('Y') }} {{ \App\Helpers\Settings::siteName() }}. All rights reserved.
             </div>
         </div>
     </footer>
