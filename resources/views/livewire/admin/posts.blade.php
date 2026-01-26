@@ -1,8 +1,19 @@
 <div>
     <div class="card card-box mb-30">
         <div class="card-header pb-0 d-flex justify-content-between align-items-center">
-            <h4 class="text-blue h4">All Posts</h4>
-            <a href="{{ route('admin.posts.create') }}" class="btn btn-primary btn-sm">Create New Post</a>
+            <h4 class="text-blue h4">{{ $showTrashed ? 'Trashed Posts' : 'All Posts' }}</h4>
+            <div>
+                <button wire:click="toggleTrashed" class="btn btn-{{ $showTrashed ? 'secondary' : 'warning' }} btn-sm mr-2">
+                    <i class="fa fa-trash"></i>
+                    {{ $showTrashed ? 'View Active Posts' : 'View Trash' }}
+                    @if(!$showTrashed && $trashCount > 0)
+                        <span class="badge badge-light">{{ $trashCount }}</span>
+                    @endif
+                </button>
+                @if(!$showTrashed)
+                <a href="{{ route('admin.posts.create') }}" class="btn btn-primary btn-sm">Create New Post</a>
+                @endif
+            </div>
         </div>
         <div class="card-body">
             <div class="row mb-2">
@@ -10,6 +21,12 @@
                     <input type="text" class="form-control" placeholder="Search posts..." wire:model.live="search">
                 </div>
             </div>
+
+            @if($showTrashed)
+            <div class="alert alert-warning mb-3">
+                <i class="fa fa-info-circle"></i> These posts are in trash. You can restore them or permanently delete them.
+            </div>
+            @endif
 
             <div class="table-responsive">
                 <table class="table table-striped">
@@ -20,7 +37,7 @@
                             <th>Category</th>
                             <th>Status</th>
                             <th>Comments</th>
-                            <th>Date</th>
+                            <th>{{ $showTrashed ? 'Deleted At' : 'Date' }}</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -51,17 +68,27 @@
                                 <td>
                                     <span class="badge badge-pill badge-secondary">{{ $post->comments_count }}</span>
                                 </td>
-                                <td>{{ $post->created_at ? $post->created_at->format('d M, Y') : '-' }}</td>
+                                <td>{{ $showTrashed ? ($post->deleted_at ? $post->deleted_at->format('d M, Y') : '-') : ($post->created_at ? $post->created_at->format('d M, Y') : '-') }}</td>
                                 <td>
-                                    <a href="{{ route('admin.posts.edit', $post->id) }}"
-                                        class="btn btn-sm btn-info">Edit</a>
-                                    <button wire:click="delete({{ $post->id }})" class="btn btn-sm btn-danger"
-                                      >Delete</button>
+                                    @if($showTrashed)
+                                        <button wire:click="restore({{ $post->id }})" class="btn btn-sm btn-success" title="Restore">
+                                            <i class="fa fa-undo"></i> Restore
+                                        </button>
+                                        <button wire:click="forceDelete({{ $post->id }})" class="btn btn-sm btn-danger" title="Delete Permanently">
+                                            <i class="fa fa-times"></i> Delete Forever
+                                        </button>
+                                    @else
+                                        <a href="{{ route('admin.posts.edit', $post->id) }}"
+                                            class="btn btn-sm btn-info">Edit</a>
+                                        <button wire:click="delete({{ $post->id }})" class="btn btn-sm btn-danger">Delete</button>
+                                    @endif
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center">No posts found.</td>
+                                <td colspan="7" class="text-center">
+                                    {{ $showTrashed ? 'No trashed posts found.' : 'No posts found.' }}
+                                </td>
                             </tr>
                         @endforelse
                     </tbody>

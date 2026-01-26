@@ -122,15 +122,19 @@ class Roles extends Component
     public function confirmDeleteRole()
     {
         try {
-            if (!$this->deleteId) return;
-            
-            Role::findOrFail($this->deleteId)->delete();
+            if (!$this->deleteId) {
+                $this->errorAlert('Error', 'No role selected for deletion.');
+                return;
+            }
+
+            $role = Role::findOrFail($this->deleteId);
+            $role->delete(); // Use soft delete
             $this->deleteId = null;
             $this->mount();
             $this->successAlert('Deleted', 'Role deleted successfully!');
         } catch (\Exception $e) {
-            $this->errorAlert('Error', 'Something went wrong while deleting the role.');
             $this->deleteId = null;
+            $this->errorAlert('Error', 'Could not delete role. Please try again.');
         }
     }
 }

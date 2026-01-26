@@ -27,7 +27,7 @@
                                     <td>{{ $category->parent ? $category->parent->name : '-' }}</td>
                                     <td>
                                         <button wire:click="edit({{ $category->id }})" class="btn btn-sm btn-primary">Edit</button>
-                                        <button wire:click="delete({{ $category->id }})" class="btn btn-sm btn-danger" onclick="confirm('Are you sure?') || event.stopImmediatePropagation()">Delete</button>
+                                        <button wire:click="delete({{ $category->id }})" class="btn btn-sm btn-danger">Delete</button>
                                     </td>
                                 </tr>
                                 @endforeach

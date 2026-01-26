@@ -109,15 +109,19 @@ class Tags extends Component
     public function confirmDeleteTag()
     {
         try {
-            if (!$this->deleteId) return;
-            
-            Tag::find($this->deleteId)->delete();
+            if (!$this->deleteId) {
+                $this->errorAlert('Error', 'No tag selected for deletion.');
+                return;
+            }
+
+            $tag = Tag::findOrFail($this->deleteId);
+            $tag->delete(); // Use soft delete
             $this->deleteId = null;
             $this->successAlert('Deleted', 'Tag deleted successfully!');
             $this->resetPage();
         } catch (\Exception $e) {
-            $this->errorAlert('Error', 'Something went wrong while deleting tag.');
             $this->deleteId = null;
+            $this->errorAlert('Error', 'Could not delete tag. Please try again.');
         }
     }
 }

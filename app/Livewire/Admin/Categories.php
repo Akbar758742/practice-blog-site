@@ -116,15 +116,19 @@ class Categories extends Component
     public function confirmDeleteCategory()
     {
         try {
-            if (!$this->deleteId) return;
-            
-            Category::find($this->deleteId)->delete();
+            if (!$this->deleteId) {
+                $this->errorAlert('Error', 'No category selected for deletion.');
+                return;
+            }
+
+            $category = Category::findOrFail($this->deleteId);
+            $category->delete(); // Use soft delete
             $this->deleteId = null;
             $this->successAlert('Deleted', 'Category deleted successfully!');
             $this->resetPage();
         } catch (\Exception $e) {
-            $this->errorAlert('Error', 'Something went wrong while deleting category.');
             $this->deleteId = null;
+            $this->errorAlert('Error', 'Could not delete category. Please try again.');
         }
     }
 }

@@ -13,14 +13,20 @@ class Posts extends Component
 
     public $search;
     public $deleteId = null;
+    public $showTrashed = false;
 
     public function render()
     {
         $query = Post::with(['category', 'user'])
-            ->withCount('comments') // Added withCount('comments')
+            ->withCount('comments')
             ->when($this->search, function ($query) {
                 $query->where('title', 'like', '%' . $this->search . '%');
             });
+
+        // Show trashed or active posts
+        if ($this->showTrashed) {
+            $query->onlyTrashed();
+        }
 
         // RBAC: Author can only see their own posts, Admin/Editor sees all
         if (!auth()->user()->hasRole('admin') && !auth()->user()->hasRole('editor')) {
@@ -29,8 +35,67 @@ class Posts extends Component
 
         $posts = $query->orderBy('created_at', 'desc')->paginate(10);
 
-        return view('livewire.admin.posts', ['posts' => $posts])
-            ->layout('backend.layout.pages-layout', ['pageTitle' => 'All Posts']);
+        // Get trash count for badge
+        $trashCount = Post::onlyTrashed()->count();
+
+        return view('livewire.admin.posts', [
+            'posts' => $posts,
+            'trashCount' => $trashCount
+        ])->layout('backend.layout.pages-layout', ['pageTitle' => $this->showTrashed ? 'Trashed Posts' : 'All Posts']);
+    }
+
+    public function toggleTrashed()
+    {
+        $this->showTrashed = !$this->showTrashed;
+        $this->resetPage();
+    }
+
+    public function restore($id)
+    {
+        try {
+            $post = Post::onlyTrashed()->findOrFail($id);
+            $post->restore();
+            $this->successAlert('Restored', 'Post restored successfully!');
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Could not restore post.');
+        }
+    }
+
+    public function forceDelete($id)
+    {
+        try {
+            $this->deleteId = $id;
+            $post = Post::onlyTrashed()->findOrFail($id);
+            $message = "<strong>Permanently delete: \"{$post->title}\"?</strong><br><small class='text-danger'>This will permanently remove the post and cannot be recovered!</small>";
+            $this->dispatch('swal:confirm-delete', [
+                'title' => 'Permanent Delete',
+                'message' => $message,
+                'confirmCallback' => 'confirmForceDelete'
+            ]);
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Post not found.');
+        }
+    }
+
+    public function confirmForceDelete()
+    {
+        try {
+            if (!$this->deleteId) return;
+
+            $post = Post::onlyTrashed()->findOrFail($this->deleteId);
+
+            // Delete image if exists
+            if ($post->featured_image && \File::exists(public_path('storage/images/posts/' . $post->featured_image))) {
+                \File::delete(public_path('storage/images/posts/' . $post->featured_image));
+            }
+
+            $post->forceDelete();
+            $this->deleteId = null;
+            $this->successAlert('Deleted', 'Post permanently deleted!');
+        } catch (\Exception $e) {
+            $this->deleteId = null;
+            $this->errorAlert('Error', 'Could not permanently delete post.');
+        }
     }
 
     public function delete($id)
@@ -55,22 +120,25 @@ class Posts extends Component
     public function confirmDeletePost()
     {
         try {
-            if (!$this->deleteId) return;
-            
-            $post = Post::find($this->deleteId);
-            if ($post) {
-                // Delete image if exists
-                if ($post->featured_image && \File::exists(public_path('storage/images/posts/' . $post->featured_image))) {
-                    \File::delete(public_path('storage/images/posts/' . $post->featured_image));
-                }
-                $post->delete();
-                $this->deleteId = null;
-                $this->successAlert('Deleted', 'Post deleted successfully!');
-                $this->resetPage();
+            if (!$this->deleteId) {
+                $this->errorAlert('Error', 'No post selected for deletion.');
+                return;
             }
-        } catch (\Exception $e) {
-            $this->errorAlert('Error', 'Something went wrong while deleting post.');
+
+            $post = Post::findOrFail($this->deleteId);
+
+            // Delete image if exists
+            if ($post->featured_image && \File::exists(public_path('storage/images/posts/' . $post->featured_image))) {
+                \File::delete(public_path('storage/images/posts/' . $post->featured_image));
+            }
+
+            $post->delete(); // Use soft delete, not forceDelete
             $this->deleteId = null;
+            $this->successAlert('Deleted', 'Post deleted successfully!');
+            $this->resetPage();
+        } catch (\Exception $e) {
+            $this->deleteId = null;
+            $this->errorAlert('Error', 'Could not delete post. Please try again.');
         }
     }
 }

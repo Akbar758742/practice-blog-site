@@ -13,10 +13,12 @@ class Comments extends Component
 
     public $search;
     public $filterStatus = '';
+    public $deleteId = null;
+    public $showTrashed = false;
 
     public function render()
     {
-        $comments = Comment::with(['user', 'post'])
+        $query = Comment::with(['user', 'post'])
             ->when($this->search, function ($q) {
                 $q->where('content', 'like', '%' . $this->search . '%')
                     ->orWhereHas('user', function ($u) {
@@ -25,13 +27,70 @@ class Comments extends Component
             })
             ->when($this->filterStatus, function ($q) {
                 $q->where('status', $this->filterStatus);
-            })
-            ->latest()
-            ->paginate(10);
+            });
+
+        // Show trashed or active comments
+        if ($this->showTrashed) {
+            $query->onlyTrashed();
+        }
+
+        $comments = $query->latest()->paginate(10);
+
+        // Get trash count
+        $trashCount = Comment::onlyTrashed()->count();
 
         return view('livewire.admin.comments', [
-            'comments' => $comments
-        ])->layout('backend.layout.pages-layout', ['pageTitle' => 'Manage Comments']);
+            'comments' => $comments,
+            'trashCount' => $trashCount
+        ])->layout('backend.layout.pages-layout', ['pageTitle' => $this->showTrashed ? 'Trashed Comments' : 'Manage Comments']);
+    }
+
+    public function toggleTrashed()
+    {
+        $this->showTrashed = !$this->showTrashed;
+        $this->resetPage();
+    }
+
+    public function restore($id)
+    {
+        try {
+            $comment = Comment::onlyTrashed()->findOrFail($id);
+            $comment->restore();
+            $this->successAlert('Restored', 'Comment restored successfully!');
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Could not restore comment.');
+        }
+    }
+
+    public function forceDelete($id)
+    {
+        try {
+            $this->deleteId = $id;
+            $comment = Comment::onlyTrashed()->findOrFail($id);
+            $message = "<strong>Permanently delete this comment?</strong><br><small class='text-danger'>This will permanently remove the comment and cannot be recovered!</small>";
+            $this->dispatch('swal:confirm-delete', [
+                'title' => 'Permanent Delete',
+                'message' => $message,
+                'confirmCallback' => 'confirmForceDelete'
+            ]);
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Comment not found.');
+        }
+    }
+
+    public function confirmForceDelete()
+    {
+        try {
+            if (!$this->deleteId) return;
+
+            $comment = Comment::onlyTrashed()->findOrFail($this->deleteId);
+            $comment->forceDelete();
+            $this->deleteId = null;
+            $this->successAlert('Deleted', 'Comment permanently deleted!');
+        } catch (\Exception $e) {
+            $this->deleteId = null;
+            $this->errorAlert('Error', 'Could not permanently delete comment.');
+        }
     }
 
     public function approve($id)
@@ -56,8 +115,7 @@ class Comments extends Component
     {
         try {
             $comment = Comment::findOrFail($id);
-            $this->authorize('delete', $comment);
-            
+
             $this->deleteId = $id;
             $postTitle = $comment->post->title ?? 'Unknown';
             $message = "<strong>Delete this comment?</strong><br><small class='text-muted'>From: <em>{$postTitle}</em><br>This action cannot be undone.</small>";
@@ -67,23 +125,25 @@ class Comments extends Component
                 'confirmCallback' => 'confirmDeleteComment'
             ]);
         } catch (\Exception $e) {
-            $this->errorAlert('Error', 'Something went wrong.');
+            $this->errorAlert('Error', 'Comment not found.');
         }
     }
 
     public function confirmDeleteComment()
     {
         try {
-            if (!$this->deleteId) return;
-            
+            if (!$this->deleteId) {
+                $this->errorAlert('Error', 'No comment selected for deletion.');
+                return;
+            }
+
             $comment = Comment::findOrFail($this->deleteId);
-            $this->authorize('delete', $comment);
-            $comment->delete();
+            $comment->delete(); // Use soft delete
             $this->deleteId = null;
             $this->successAlert('Deleted', 'Comment deleted successfully.');
         } catch (\Exception $e) {
-            $this->errorAlert('Error', 'Something went wrong while deleting comment.');
             $this->deleteId = null;
+            $this->errorAlert('Error', 'Could not delete comment: ' . $e->getMessage());
         }
     }
 }

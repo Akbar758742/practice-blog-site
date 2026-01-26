@@ -118,15 +118,19 @@ class Permissions extends Component
     public function confirmDeletePermission()
     {
         try {
-            if (!$this->deleteId) return;
-            
-            Permission::findOrFail($this->deleteId)->delete();
+            if (!$this->deleteId) {
+                $this->errorAlert('Error', 'No permission selected for deletion.');
+                return;
+            }
+
+            $permission = Permission::findOrFail($this->deleteId);
+            $permission->delete(); // Use soft delete
             $this->deleteId = null;
             $this->mount();
             $this->successAlert('Deleted', 'Permission deleted successfully!');
         } catch (\Exception $e) {
-            $this->errorAlert('Error', 'Something went wrong while deleting the permission.');
             $this->deleteId = null;
+            $this->errorAlert('Error', 'Could not delete permission. Please try again.');
         }
     }
 }

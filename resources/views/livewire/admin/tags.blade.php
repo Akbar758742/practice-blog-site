@@ -26,7 +26,7 @@
                                             <button wire:click="edit({{ $tag->id }})"
                                                 class="btn btn-sm btn-primary">Edit</button>
                                             <button wire:click="delete({{ $tag->id }})" class="btn btn-sm btn-danger"
-                                                onclick="confirm('Are you sure?') || event.stopImmediatePropagation()">Delete</button>
+                                               >Delete</button>
                                         </td>
                                     </tr>
                                 @endforeach

@@ -479,9 +479,26 @@
                     allowEscapeKey: false,
                 }).then((result) => {
                     if (result.isConfirmed && message.confirmCallback) {
-                        Livewire.dispatch(message.confirmCallback);
-                    } else if (result.isDismissed && message.cancelCallback) {
-                        Livewire.dispatch(message.cancelCallback);
+                        try {
+                            // Find all Livewire components and call the method on the last active one
+                            const components = document.querySelectorAll('[wire\\:id]');
+                            if (components.length > 0) {
+                                const lastComponent = components[components.length - 1];
+                                const componentId = lastComponent.getAttribute('wire:id');
+                                if (componentId) {
+                                    const component = Livewire.find(componentId);
+                                    if (component) {
+                                        component.call(message.confirmCallback).then(() => {
+                                            // Success - component handled it
+                                        }).catch((error) => {
+                                            console.error('Error calling component method:', error);
+                                        });
+                                    }
+                                }
+                            }
+                        } catch (error) {
+                            console.error('Delete confirmation error:', error);
+                        }
                     }
                 });
             });
