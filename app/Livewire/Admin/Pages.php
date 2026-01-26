@@ -26,13 +26,45 @@ class Pages extends Component
 
     public function delete($id)
     {
-        // Permission check
-        if (!auth()->user()->hasRole('admin')) {
-            $this->errorAlert('Error', 'You do not have permission to delete pages.');
-            return;
-        }
+        try {
+            // Permission check
+            if (!auth()->user()->hasRole('admin')) {
+                $this->errorAlert('Error', 'You do not have permission to delete pages.');
+                return;
+            }
 
-        Page::find($id)->delete();
-        $this->successAlert('Deleted', 'Page deleted successfully.');
+            $page = Page::find($id);
+            if ($page) {
+                $this->deleteId = $id;
+                $message = "<strong>Delete Page: \"{$page->title}\"?</strong><br><small class='text-muted'>This action cannot be undone.</small>";
+                $this->dispatch('swal:confirm-delete', [
+                    'title' => 'Delete Page',
+                    'message' => $message,
+                    'confirmCallback' => 'confirmDeletePage'
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong.');
+        }
+    }
+
+    public function confirmDeletePage()
+    {
+        try {
+            if (!auth()->user()->hasRole('admin')) {
+                $this->errorAlert('Error', 'You do not have permission to delete pages.');
+                return;
+            }
+
+            if (!$this->deleteId) return;
+            
+            Page::find($this->deleteId)->delete();
+            $this->deleteId = null;
+            $this->successAlert('Deleted', 'Page deleted successfully.');
+            $this->resetPage();
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong while deleting page.');
+            $this->deleteId = null;
+        }
     }
 }

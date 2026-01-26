@@ -464,6 +464,29 @@
                 });
             });
 
+            Livewire.on('swal:confirm-delete', (data) => {
+                const message = Array.isArray(data) ? data[0] : data;
+                Swal.fire({
+                    icon: 'warning',
+                    title: message.title || 'Confirm Deletion',
+                    html: message.message || '',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '<i class="fa fa-trash"></i> Yes, Delete',
+                    cancelButtonText: 'Cancel',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                }).then((result) => {
+                    if (result.isConfirmed && message.confirmCallback) {
+                        Livewire.dispatch(message.confirmCallback);
+                    } else if (result.isDismissed && message.cancelCallback) {
+                        Livewire.dispatch(message.cancelCallback);
+                    }
+                });
+            });
+
+
             // Close Bootstrap modals on Livewire event
             Livewire.on('close-modal', () => {
                 // Close all open Bootstrap modals

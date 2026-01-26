@@ -12,6 +12,7 @@ class Posts extends Component
     use WithPagination, AlertTrait;
 
     public $search;
+    public $deleteId = null;
 
     public function render()
     {
@@ -38,15 +39,38 @@ class Posts extends Component
             $post = Post::find($id);
             $this->authorize('delete', $post);
             if ($post) {
+                $this->deleteId = $id;
+                $message = "<strong>Delete Post: \"{$post->title}\"?</strong><br><small class='text-muted'>This action cannot be undone.</small>";
+                $this->dispatch('swal:confirm-delete', [
+                    'title' => 'Delete Post',
+                    'message' => $message,
+                    'confirmCallback' => 'confirmDeletePost'
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong while loading post.');
+        }
+    }
+
+    public function confirmDeletePost()
+    {
+        try {
+            if (!$this->deleteId) return;
+            
+            $post = Post::find($this->deleteId);
+            if ($post) {
                 // Delete image if exists
                 if ($post->featured_image && \File::exists(public_path('storage/images/posts/' . $post->featured_image))) {
                     \File::delete(public_path('storage/images/posts/' . $post->featured_image));
                 }
                 $post->delete();
+                $this->deleteId = null;
                 $this->successAlert('Deleted', 'Post deleted successfully!');
+                $this->resetPage();
             }
         } catch (\Exception $e) {
             $this->errorAlert('Error', 'Something went wrong while deleting post.');
+            $this->deleteId = null;
         }
     }
 }

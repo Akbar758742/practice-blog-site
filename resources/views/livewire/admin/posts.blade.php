@@ -56,7 +56,7 @@
                                     <a href="{{ route('admin.posts.edit', $post->id) }}"
                                         class="btn btn-sm btn-info">Edit</a>
                                     <button wire:click="delete({{ $post->id }})" class="btn btn-sm btn-danger"
-                                        onclick="confirm('Are you sure you want to delete this post?') || event.stopImmediatePropagation()">Delete</button>
+                                      >Delete</button>
                                 </td>
                             </tr>
                         @empty

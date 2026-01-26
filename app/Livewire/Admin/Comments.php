@@ -54,10 +54,36 @@ class Comments extends Component
 
     public function delete($id)
     {
-        $comment = Comment::findOrFail($id);
-        $this->authorize('delete', $comment);
+        try {
+            $comment = Comment::findOrFail($id);
+            $this->authorize('delete', $comment);
+            
+            $this->deleteId = $id;
+            $postTitle = $comment->post->title ?? 'Unknown';
+            $message = "<strong>Delete this comment?</strong><br><small class='text-muted'>From: <em>{$postTitle}</em><br>This action cannot be undone.</small>";
+            $this->dispatch('swal:confirm-delete', [
+                'title' => 'Delete Comment',
+                'message' => $message,
+                'confirmCallback' => 'confirmDeleteComment'
+            ]);
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong.');
+        }
+    }
 
-        $comment->delete();
-        $this->successAlert('Deleted', 'Comment deleted successfully.');
+    public function confirmDeleteComment()
+    {
+        try {
+            if (!$this->deleteId) return;
+            
+            $comment = Comment::findOrFail($this->deleteId);
+            $this->authorize('delete', $comment);
+            $comment->delete();
+            $this->deleteId = null;
+            $this->successAlert('Deleted', 'Comment deleted successfully.');
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong while deleting comment.');
+            $this->deleteId = null;
+        }
     }
 }

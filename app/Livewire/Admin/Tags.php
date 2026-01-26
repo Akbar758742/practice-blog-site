@@ -16,6 +16,7 @@ class Tags extends Component
     public $slug;
     public $tagId;
     public $isUpdateMode = false;
+    public $deleteId = null;
 
     public function render()
     {
@@ -89,10 +90,34 @@ class Tags extends Component
     public function delete($id)
     {
         try {
-            Tag::find($id)->delete();
+            $tag = Tag::find($id);
+            if ($tag) {
+                $this->deleteId = $id;
+                $postCount = $tag->posts()->count();
+                $message = "<strong>Delete Tag: \"{$tag->name}\"?</strong><br><small class='text-muted'>Associated with {$postCount} post(s).<br>This action cannot be undone.</small>";
+                $this->dispatch('swal:confirm-delete', [
+                    'title' => 'Delete Tag',
+                    'message' => $message,
+                    'confirmCallback' => 'confirmDeleteTag'
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong.');
+        }
+    }
+
+    public function confirmDeleteTag()
+    {
+        try {
+            if (!$this->deleteId) return;
+            
+            Tag::find($this->deleteId)->delete();
+            $this->deleteId = null;
             $this->successAlert('Deleted', 'Tag deleted successfully!');
+            $this->resetPage();
         } catch (\Exception $e) {
             $this->errorAlert('Error', 'Something went wrong while deleting tag.');
+            $this->deleteId = null;
         }
     }
 }

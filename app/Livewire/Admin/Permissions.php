@@ -13,6 +13,7 @@ class Permissions extends Component
     public $permissions;
     public $name, $slug, $group_name, $permission_id;
     public $isEdit = false;
+    public $deleteId = null;
 
     public function mount()
     {
@@ -100,11 +101,32 @@ class Permissions extends Component
     public function deletePermission($id)
     {
         try {
-            Permission::findOrFail($id)->delete();
+            $permission = Permission::findOrFail($id);
+            $this->deleteId = $id;
+            $roleCount = $permission->roles()->count();
+            $message = "<strong>Delete Permission: \"{$permission->name}\"?</strong><br><small class='text-muted'>Used by {$roleCount} role(s).<br>This action cannot be undone.</small>";
+            $this->dispatch('swal:confirm-delete', [
+                'title' => 'Delete Permission',
+                'message' => $message,
+                'confirmCallback' => 'confirmDeletePermission'
+            ]);
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong.');
+        }
+    }
+
+    public function confirmDeletePermission()
+    {
+        try {
+            if (!$this->deleteId) return;
+            
+            Permission::findOrFail($this->deleteId)->delete();
+            $this->deleteId = null;
             $this->mount();
             $this->successAlert('Deleted', 'Permission deleted successfully!');
         } catch (\Exception $e) {
             $this->errorAlert('Error', 'Something went wrong while deleting the permission.');
+            $this->deleteId = null;
         }
     }
 }

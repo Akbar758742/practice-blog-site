@@ -27,4 +27,14 @@ trait AlertTrait
             'message' => $message
         ]);
     }
+
+    public function confirmDeleteAlert($title, $message, $confirmCallback, $cancelCallback = null)
+    {
+        $this->dispatch('swal:confirm-delete', [
+            'title' => $title,
+            'message' => $message,
+            'confirmCallback' => $confirmCallback,
+            'cancelCallback' => $cancelCallback
+        ]);
+    }
 }

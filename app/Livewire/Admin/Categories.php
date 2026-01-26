@@ -17,6 +17,7 @@ class Categories extends Component
     public $parent_id;
     public $categoryId;
     public $isUpdateMode = false;
+    public $deleteId = null;
 
     public function render()
     {
@@ -96,10 +97,34 @@ class Categories extends Component
     public function delete($id)
     {
         try {
-            Category::find($id)->delete();
+            $category = Category::find($id);
+            if ($category) {
+                $this->deleteId = $id;
+                $postCount = $category->posts()->count();
+                $message = "<strong>Delete Category: \"{$category->name}\"?</strong><br><small class='text-muted'>Associated with {$postCount} post(s).<br>This action cannot be undone.</small>";
+                $this->dispatch('swal:confirm-delete', [
+                    'title' => 'Delete Category',
+                    'message' => $message,
+                    'confirmCallback' => 'confirmDeleteCategory'
+                ]);
+            }
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong.');
+        }
+    }
+
+    public function confirmDeleteCategory()
+    {
+        try {
+            if (!$this->deleteId) return;
+            
+            Category::find($this->deleteId)->delete();
+            $this->deleteId = null;
             $this->successAlert('Deleted', 'Category deleted successfully!');
+            $this->resetPage();
         } catch (\Exception $e) {
             $this->errorAlert('Error', 'Something went wrong while deleting category.');
+            $this->deleteId = null;
         }
     }
 }

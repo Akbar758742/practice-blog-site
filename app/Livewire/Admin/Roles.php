@@ -15,6 +15,7 @@ class Roles extends Component
     public $name, $slug, $role_id;
     public $selectedPermissions = [];
     public $isEdit = false;
+    public $deleteId = null;
 
     public function mount()
     {
@@ -104,11 +105,32 @@ class Roles extends Component
     public function deleteRole($id)
     {
         try {
-            Role::findOrFail($id)->delete();
+            $role = Role::findOrFail($id);
+            $this->deleteId = $id;
+            $userCount = $role->users()->count();
+            $message = "<strong>Delete Role: \"{$role->name}\"?</strong><br><small class='text-muted'>Assigned to {$userCount} user(s).<br>This action cannot be undone.</small>";
+            $this->dispatch('swal:confirm-delete', [
+                'title' => 'Delete Role',
+                'message' => $message,
+                'confirmCallback' => 'confirmDeleteRole'
+            ]);
+        } catch (\Exception $e) {
+            $this->errorAlert('Error', 'Something went wrong.');
+        }
+    }
+
+    public function confirmDeleteRole()
+    {
+        try {
+            if (!$this->deleteId) return;
+            
+            Role::findOrFail($this->deleteId)->delete();
+            $this->deleteId = null;
             $this->mount();
             $this->successAlert('Deleted', 'Role deleted successfully!');
         } catch (\Exception $e) {
             $this->errorAlert('Error', 'Something went wrong while deleting the role.');
+            $this->deleteId = null;
         }
     }
 }
