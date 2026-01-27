@@ -20,13 +20,15 @@ class Settings extends Component
 
      public $site_title, $site_email, $site_phone, $site_address, $site_meta_keywords, $site_meta_description;
 
-    // Existing logo/favicon paths from database
+    // Existing logo/favicon/signin image paths from database
     public $existing_site_logo;
     public $existing_site_favicon;
+    public $existing_signin_image;
 
     // New file uploads
     public $site_logo;
     public $site_favicon;
+    public $signin_image;
 
     public function selectTab($tab)
     {
@@ -44,6 +46,7 @@ class Settings extends Component
            $this->site_address = $settings->site_address;
            $this->existing_site_logo = $settings->site_logo;
            $this->existing_site_favicon = $settings->site_favicon;
+           $this->existing_signin_image = $settings->signin_image;
            $this->site_meta_keywords = $settings->site_meta_keywords;
            $this->site_meta_description = $settings->site_meta_description;
        }
@@ -133,6 +136,34 @@ class Settings extends Component
         $this->site_favicon = null;
         SettingsHelper::clearCache();
         $this->successAlert('Success', 'Favicon updated successfully.');
+    }
+
+    public function updateSigninImage()
+    {
+        $this->validate([
+            'signin_image' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+        ]);
+
+        $settings = GeneralSetting::take(1)->first();
+
+        // Delete old signin image if exists
+        if ($settings && $settings->signin_image && Storage::disk('public')->exists($settings->signin_image)) {
+            Storage::disk('public')->delete($settings->signin_image);
+        }
+
+        // Store new signin image
+        $signinImagePath = $this->signin_image->store('site', 'public');
+
+        if (!is_null($settings)) {
+            $settings->update(['signin_image' => $signinImagePath]);
+        } else {
+            GeneralSetting::create(['signin_image' => $signinImagePath]);
+        }
+
+        $this->existing_signin_image = $signinImagePath;
+        $this->signin_image = null;
+        SettingsHelper::clearCache();
+        $this->successAlert('Success', 'Sign-in page image updated successfully.');
     }
 
 

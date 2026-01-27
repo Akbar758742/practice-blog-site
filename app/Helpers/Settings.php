@@ -72,6 +72,18 @@ class Settings
     }
 
     /**
+     * Get sign-in page image URL
+     */
+    public static function signinImage()
+    {
+        $signinImage = self::get('signin_image');
+        if ($signinImage) {
+            return asset('storage/' . $signinImage);
+        }
+        return asset('backend/vendors/images/login-page-img.png');
+    }
+
+    /**
      * Clear settings cache (call after updating settings)
      */
     public static function clearCache()

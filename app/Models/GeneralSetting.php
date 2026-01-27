@@ -18,6 +18,7 @@ class GeneralSetting extends Model
         'site_address',
         'site_logo',
         'site_favicon',
+        'signin_image',
         'site_meta_keywords',
         'site_meta_description',
     ];

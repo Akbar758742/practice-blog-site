@@ -120,6 +120,32 @@
                         </form>
                     </div>
                </div>
+
+                {{-- Sign-in Page Image Section --}}
+                <div class="col-md-12 mt-4">
+                    <div class="form-group">
+                        <h5 class="mb-3">Sign-in Page Image</h5>
+                        <div class="mb-3" style="max-width:400px; min-height:150px; background:#f5f5f5; display:flex; align-items:center; justify-content:center; border-radius:8px; padding:10px;">
+                            @if($signin_image)
+                                <img src="{{ $signin_image->temporaryUrl() }}" alt="New Sign-in Image Preview" style="max-width:100%; max-height:200px;">
+                            @elseif($existing_signin_image)
+                                <img src="{{ asset('storage/' . $existing_signin_image) }}" alt="Current Sign-in Image" style="max-width:100%; max-height:200px;">
+                            @else
+                                <span class="text-muted">No sign-in image uploaded</span>
+                            @endif
+                        </div>
+                        <form wire:submit.prevent="updateSigninImage">
+                            <div class="mb-2">
+                               <input type="file" wire:model="signin_image" id="signin_image" class="form-control" accept="image/*">
+                                @error('signin_image') <span class="text-danger">{{ $message }}</span> @enderror
+                            </div>
+                            <button type="submit" class="btn btn-primary" wire:loading.attr="disabled">
+                                <span wire:loading.remove wire:target="signin_image,updateSigninImage">Update Sign-in Image</span>
+                                <span wire:loading wire:target="signin_image,updateSigninImage">Uploading...</span>
+                            </button>
+                        </form>
+                    </div>
+               </div>
             </div>
         </div>
     </div>

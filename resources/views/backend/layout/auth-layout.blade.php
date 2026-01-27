@@ -10,19 +10,19 @@
 		<link
 			rel="apple-touch-icon"
 			sizes="180x180"
-			href="{{asset('backend')}}/vendors/images/apple-touch-icon.png"
+			href="{{ \App\Helpers\Settings::favicon() }}"
 		/>
 		<link
 			rel="icon"
 			type="image/png"
 			sizes="32x32"
-			href="{{asset('backend')}}/vendors/images/favicon-32x32.png"
+			href="{{ \App\Helpers\Settings::favicon() }}"
 		/>
 		<link
 			rel="icon"
 			type="image/png"
 			sizes="16x16"
-			href="{{asset('backend')}}/vendors/images/favicon-16x16.png"
+			href="{{ \App\Helpers\Settings::favicon() }}"
 		/>
 
 		<!-- Mobile Specific Metas -->
@@ -54,11 +54,11 @@
 			>
 				<div class="brand-logo">
 					<a href="login.html">
-						<img src="{{asset('backend')}}/vendors/images/deskapp-logo.svg" alt="" />
+						<img src="{{ \App\Helpers\Settings::logo() }}" alt="" />
 					</a>
 				</div>
 				<div class="login-menu">
-					
+
 				</div>
 			</div>
 		</div>
@@ -68,7 +68,7 @@
 			<div class="container">
 				<div class="row align-items-center">
 					<div class="col-md-6 col-lg-7">
-						<img src="{{asset('backend')}}/vendors/images/login-page-img.png" alt="" />
+						<img src="{{ \App\Helpers\Settings::signinImage() }}" alt="" />
 					</div>
 					<div class="col-md-6 col-lg-5">
 						@yield('content')
