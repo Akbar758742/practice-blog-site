@@ -81,8 +81,8 @@
                 </tbody>
             </table>
         </div>
-        <div class="mt-4">
-            {{ $pages->links() }}
+        <div class="mt-4 px-3">
+            <x-pagination :items="$pages" wirePath="gotoPage" />
         </div>
     </div>
 </div>

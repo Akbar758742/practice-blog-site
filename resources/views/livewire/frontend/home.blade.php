@@ -99,7 +99,7 @@
     </section>
 
     <div class="container mx-auto px-4 mb-12">
-        {{ $recentPosts->links() }}
+        <x-pagination :items="$recentPosts" />
     </div>
 
     {{-- Newsletter CTA --}}

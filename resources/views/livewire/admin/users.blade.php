@@ -90,7 +90,7 @@
                 </tbody>
             </table>
             <div class="px-3">
-                {{ $users->links() }}
+                <x-pagination :items="$users" wirePath="gotoPage" />
             </div>
         </div>
     </div>
@@ -161,7 +161,7 @@
                     <div class="alert alert-warning mb-3" role="alert">
                         <strong>⚠️ Warning!</strong> You are about to permanently delete the user account: <strong>{{ $userToDeleteName }}</strong>
                     </div>
-                    
+
                     @if($userToDeletePostCount > 0 || $userToDeleteCommentCount > 0)
                     <p class="mb-2">This user has the following associated content that will also be <strong class="text-danger">permanently deleted</strong>:</p>
                     <ul class="list-group list-group-flush mb-3">
@@ -179,7 +179,7 @@
                         @endif
                     </ul>
                     @endif
-                    
+
                     <div class="alert alert-danger mt-3 mb-0">
                         <strong class="d-block mb-2">⛔ This action CANNOT be undone!</strong>
                         <small>All user data, posts, and comments will be permanently deleted from the system.</small>

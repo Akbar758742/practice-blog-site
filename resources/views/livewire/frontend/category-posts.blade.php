@@ -46,6 +46,6 @@
     </div>
 
     <div class="mt-12">
-        {{ $posts->links() }}
+        <x-pagination :items="$posts" />
     </div>
 </div>

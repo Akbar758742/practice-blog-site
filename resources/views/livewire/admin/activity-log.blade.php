@@ -322,8 +322,7 @@
             </table>
         </div>
 
-        <div class="mt-4">
-            {{ $activities->links() }}
-        </div>
+        {{-- Professional Pagination --}}
+        <x-pagination :items="$activities" wirePath="gotoPage" />
     </div>
 </div>

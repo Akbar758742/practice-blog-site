@@ -207,11 +207,9 @@
             </div>
 
             <!-- Pagination -->
-            @if($notifications->hasPages())
-                <div class="pd-20 pt-0">
-                    {{ $notifications->links() }}
-                </div>
-            @endif
+            <div class="pd-20 pt-0">
+                <x-pagination :items="$notifications" wirePath="gotoPage" />
+            </div>
         </div>
     </div>
 </div>

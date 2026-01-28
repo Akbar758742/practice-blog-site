@@ -113,8 +113,8 @@
                 </tbody>
             </table>
         </div>
-        <div class="mt-4">
-            {{ $comments->links() }}
+        <div class="mt-4 px-3">
+            <x-pagination :items="$comments" wirePath="gotoPage" />
         </div>
     </div>
 </div>
