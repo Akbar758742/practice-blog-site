@@ -7,6 +7,10 @@ use Illuminate\Auth\Middleware\Authenticate;
 use Illuminate\Auth\Middleware\RedirectIfAuthenticated;
 use Illuminate\Container\Attributes\Auth;
 use Illuminate\Support\Facades\Session;
+use App\Models\Comment;
+use App\Models\Post;
+use App\Observers\CommentObserver;
+use App\Observers\PostObserver;
 
 
 class AppServiceProvider extends ServiceProvider
@@ -24,6 +28,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register model observers
+        Comment::observe(CommentObserver::class);
+        Post::observe(PostObserver::class);
+
         //redirect if authenticated
         RedirectIfAuthenticated::redirectUsing(function () {
             return route('admin.dashboard');

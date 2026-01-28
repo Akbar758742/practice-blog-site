@@ -1,12 +1,12 @@
 <div>
     {{-- Statistics Cards --}}
     <div class="row pb-10">
-        <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+        <div class="col-xl-2 col-lg-3 col-md-6 mb-20">
             <div class="card-box height-100-p widget-style3">
                 <div class="d-flex flex-wrap">
                     <div class="widget-data">
                         <div class="weight-700 font-24 text-dark">{{ number_format($stats['total']) }}</div>
-                        <div class="font-14 text-secondary weight-500">Total Activities</div>
+                        <div class="font-14 text-secondary weight-500">Total</div>
                     </div>
                     <div class="widget-icon">
                         <div class="icon" data-color="#00eccf"><i class="icon-copy dw dw-list3"></i></div>
@@ -14,7 +14,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+        <div class="col-xl-2 col-lg-3 col-md-6 mb-20">
             <div class="card-box height-100-p widget-style3">
                 <div class="d-flex flex-wrap">
                     <div class="widget-data">
@@ -27,7 +27,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+        <div class="col-xl-2 col-lg-3 col-md-6 mb-20">
             <div class="card-box height-100-p widget-style3">
                 <div class="d-flex flex-wrap">
                     <div class="widget-data">
@@ -35,12 +35,12 @@
                         <div class="font-14 text-secondary weight-500">This Week</div>
                     </div>
                     <div class="widget-icon">
-                        <div class="icon" data-color="#ff5b5b"><i class="icon-copy fa fa-calendar"></i></div>
+                        <div class="icon" data-color="#5b93ff"><i class="icon-copy fa fa-calendar"></i></div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-xl-3 col-lg-3 col-md-6 mb-20">
+        <div class="col-xl-2 col-lg-3 col-md-6 mb-20">
             <div class="card-box height-100-p widget-style3">
                 <div class="d-flex flex-wrap">
                     <div class="widget-data">
@@ -49,6 +49,32 @@
                     </div>
                     <div class="widget-icon">
                         <div class="icon" data-color="#5b93ff"><i class="icon-copy fa fa-calendar-o"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-lg-3 col-md-6 mb-20">
+            <div class="card-box height-100-p widget-style3 {{ $stats['critical'] > 0 ? 'bg-light-danger' : '' }}">
+                <div class="d-flex flex-wrap">
+                    <div class="widget-data">
+                        <div class="weight-700 font-24 text-danger">{{ number_format($stats['critical']) }}</div>
+                        <div class="font-14 text-secondary weight-500">Critical</div>
+                    </div>
+                    <div class="widget-icon">
+                        <div class="icon" data-color="#ff5b5b"><i class="icon-copy dw dw-warning"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-2 col-lg-3 col-md-6 mb-20">
+            <div class="card-box height-100-p widget-style3 {{ $stats['warning'] > 0 ? 'bg-light-warning' : '' }}">
+                <div class="d-flex flex-wrap">
+                    <div class="widget-data">
+                        <div class="weight-700 font-24 text-warning">{{ number_format($stats['warning']) }}</div>
+                        <div class="font-14 text-secondary weight-500">Warnings</div>
+                    </div>
+                    <div class="widget-icon">
+                        <div class="icon" data-color="#ffaf00"><i class="icon-copy dw dw-alert"></i></div>
                     </div>
                 </div>
             </div>
@@ -92,9 +118,19 @@
                     @endforeach
                 </select>
             </div>
-            <div class="col-md-3 mb-2">
+            <div class="col-md-2 mb-2">
+                <select class="form-control" wire:model.live="filterSeverity">
+                    <option value="">All Severities</option>
+                    @foreach($severities as $severity)
+                        <option value="{{ $severity }}" class="{{ $severity === 'CRITICAL' ? 'text-danger' : ($severity === 'WARNING' ? 'text-warning' : '') }}">
+                            {{ $severity }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-1 mb-2">
                 <button wire:click="clearFilters" class="btn btn-secondary btn-sm">
-                    <i class="icon-copy fa fa-refresh"></i> Clear Filters
+                    <i class="icon-copy fa fa-refresh"></i>
                 </button>
             </div>
         </div>
@@ -138,6 +174,7 @@
                         <th width="120">User</th>
                         <th width="80">Type</th>
                         <th width="100">Action</th>
+                        <th width="80">Severity</th>
                         <th>Description</th>
                         <th width="200">Details</th>
                     </tr>
@@ -147,6 +184,8 @@
                         @php
                             $properties = $activity->properties ? $activity->properties->toArray() : [];
                             $action = $properties['action'] ?? 'unknown';
+                            $severity = $properties['severity'] ?? 'INFO';
+                            $flag = $properties['flag'] ?? null;
                             $actionColor = match($action) {
                                 'created' => 'success',
                                 'updated' => 'primary',
@@ -154,10 +193,21 @@
                                 'restored' => 'info',
                                 'force_deleted' => 'danger',
                                 'status_changed' => 'secondary',
+                                'bulk_delete' => 'danger',
+                                'unauthorized_attempt' => 'danger',
+                                'role_changed' => 'warning',
+                                'login_failure' => 'danger',
+                                'permission_denied' => 'warning',
                                 default => 'light',
                             };
+                            $severityColor = match($severity) {
+                                'CRITICAL' => 'danger',
+                                'WARNING' => 'warning',
+                                'INFO' => 'info',
+                                default => 'secondary',
+                            };
                         @endphp
-                        <tr>
+                        <tr class="{{ $severity === 'CRITICAL' ? 'table-danger' : ($severity === 'WARNING' ? 'table-warning' : '') }}">
                             <td>
                                 <div class="font-weight-bold">{{ $activity->created_at->format('d M Y') }}</div>
                                 <small class="text-muted">{{ $activity->created_at->format('H:i:s') }}</small>
@@ -177,6 +227,21 @@
                             <td>
                                 <span class="badge badge-{{ $actionColor }}">
                                     {{ ucfirst(str_replace('_', ' ', $action)) }}
+                                </span>
+                                @if($flag)
+                                    <br><small class="badge badge-outline-{{ $actionColor }} mt-1">{{ $flag }}</small>
+                                @endif
+                            </td>
+                            <td>
+                                <span class="badge badge-{{ $severityColor }}">
+                                    @if($severity === 'CRITICAL')
+                                        <i class="icon-copy dw dw-warning mr-1"></i>
+                                    @elseif($severity === 'WARNING')
+                                        <i class="icon-copy dw dw-alert mr-1"></i>
+                                    @else
+                                        <i class="icon-copy dw dw-information mr-1"></i>
+                                    @endif
+                                    {{ $severity }}
                                 </span>
                             </td>
                             <td>

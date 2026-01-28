@@ -10,11 +10,13 @@ use App\UserStatus;
 use App\UserType;
 use App\Models\UserSocialLink;
 use App\Models\Role;
+use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\LogOptions;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -126,5 +128,14 @@ class User extends Authenticatable
             ->flatten()
             ->pluck('slug')
             ->contains($permission);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'email', 'status', 'type'])
+            ->logOnlyDirty()
+            ->useLogName('user')
+            ->setDescriptionForEvent(fn(string $eventName) => "User has been {$eventName}");
     }
 }

@@ -9,6 +9,7 @@ use App\Models\Post;
 use App\Models\Tag;
 use App\Traits\AlertTrait;
 use App\Traits\ActivityLogTrait;
+use App\Services\NotificationService;
 use Illuminate\Support\Str;
 
 class EditPost extends Component
@@ -106,6 +107,9 @@ class EditPost extends Component
 
         // Log post update with changes
         $this->logUpdated('post', $post, $oldValues, $post->title);
+
+        // Notify the original author if post was updated by someone else
+        NotificationService::notifyPostUpdatedByAnother($post, auth()->user());
 
         $this->successAlert('Success', 'Post updated successfully!');
         return redirect()->route('admin.posts.index');

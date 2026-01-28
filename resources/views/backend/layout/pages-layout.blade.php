@@ -91,80 +91,7 @@
                     </a>
                 </div>
             </div>
-            <div class="user-notification">
-                <div class="dropdown">
-                    <a class="dropdown-toggle no-arrow" href="#" role="button" data-toggle="dropdown">
-                        <i class="icon-copy dw dw-notification"></i>
-                        <span class="badge notification-active"></span>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right">
-                        <div class="notification-list mx-h-350 customscroll">
-                            <ul>
-                                <li>
-                                    <a href="#">
-                                        <img src="{{ asset('backend') }}/vendors/images/img.jpg" alt="" />
-                                        <h3>John Doe</h3>
-                                        <p>
-                                            Lorem ipsum dolor sit amet, consectetur adipisicing
-                                            elit, sed...
-                                        </p>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <img src="{{ asset('backend') }}/vendors/images/photo1.jpg" alt="" />
-                                        <h3>Lea R. Frith</h3>
-                                        <p>
-                                            Lorem ipsum dolor sit amet, consectetur adipisicing
-                                            elit, sed...
-                                        </p>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <img src="{{ asset('backend') }}/vendors/images/photo2.jpg" alt="" />
-                                        <h3>Erik L. Richards</h3>
-                                        <p>
-                                            Lorem ipsum dolor sit amet, consectetur adipisicing
-                                            elit, sed...
-                                        </p>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <img src="{{ asset('backend') }}/vendors/images/photo3.jpg" alt="" />
-                                        <h3>John Doe</h3>
-                                        <p>
-                                            Lorem ipsum dolor sit amet, consectetur adipisicing
-                                            elit, sed...
-                                        </p>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <img src="{{ asset('backend') }}/vendors/images/photo4.jpg" alt="" />
-                                        <h3>Renee I. Hansen</h3>
-                                        <p>
-                                            Lorem ipsum dolor sit amet, consectetur adipisicing
-                                            elit, sed...
-                                        </p>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="#">
-                                        <img src="{{ asset('backend') }}/vendors/images/img.jpg" alt="" />
-                                        <h3>Vicki M. Coleman</h3>
-                                        <p>
-                                            Lorem ipsum dolor sit amet, consectetur adipisicing
-                                            elit, sed...
-                                        </p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            @livewire('admin.notifications')
             @livewire('admin.top-user-info')
             <div class="github-link">
                 <a href="https://github.com/dropways/deskapp" target="_blank"><img
@@ -172,7 +99,6 @@
             </div>
         </div>
     </div>
-
     <div class="right-sidebar">
         <div class="sidebar-title">
             <h3 class="weight-600 font-16 text-blue">
@@ -371,6 +297,20 @@
                             </a>
                         </li>
                     @endif
+
+                    <li>
+                        <a href="{{ route('admin.all-notifications') }}"
+                            class="dropdown-toggle no-arrow {{ Route::is('admin.all-notifications') ? 'active' : '' }}">
+                            <span class="micon dw dw-notification"></span>
+                            <span class="mtext">Notifications</span>
+                            @php
+                                $unreadNotifCount = auth()->user()->unreadNotifications()->count();
+                            @endphp
+                            @if($unreadNotifCount > 0)
+                                <span class="badge badge-pill badge-danger ml-auto">{{ $unreadNotifCount > 99 ? '99+' : $unreadNotifCount }}</span>
+                            @endif
+                        </a>
+                    </li>
 
                     <li>
                         <div class="dropdown-divider"></div>

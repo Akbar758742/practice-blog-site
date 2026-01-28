@@ -85,6 +85,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         // Authorization check is done in the component itself
         Route::get('/activity-log', \App\Livewire\Admin\ActivityLog::class)->name('activity-log');
 
+        // All Notifications Page
+        Route::get('/notifications', \App\Livewire\Admin\AllNotifications::class)->name('all-notifications');
+
         // Settings - requires settings.manage permission
         Route::middleware('permission:settings.manage')->group(function () {
             Route::controller(AdminController::class)->group(function () {

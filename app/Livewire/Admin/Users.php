@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Role;
 use App\Traits\AlertTrait;
 use App\Traits\ActivityLogTrait;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -118,6 +119,9 @@ class Users extends Component
                 'email' => $user->email,
             ];
 
+            // Store old roles for notification
+            $oldRoles = $user->roles->pluck('name')->toArray();
+
             $user->update([
                 'name' => $this->name,
                 'email' => $this->email,
@@ -128,6 +132,15 @@ class Users extends Component
             }
 
             $user->roles()->sync([$this->role_id]);
+
+            // Get new roles for comparison
+            $user->refresh();
+            $newRoles = $user->roles->pluck('name')->toArray();
+
+            // Log role change if roles have changed
+            if ($oldRoles != $newRoles) {
+                $this->logRoleChange($user, $oldRoles, $newRoles);
+            }
 
             // Log user update
             $this->logUpdated('user', $user, $oldValues, $user->name);
